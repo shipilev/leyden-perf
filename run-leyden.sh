@@ -1,7 +1,11 @@
 #/bin/bash
 
 # Config
-OPTS="-Xmx256m -XX:+UseSerialGC"
+#OPTS="-Xmx256m -Xms256m -XX:+UseSerialGC"
+#OPTS="-Xmx256m -Xms256m -XX:+UseParallelGC"
+OPTS="-Xmx256m -Xms256m -XX:+UseG1GC"
+#OPTS="-Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"
+
 HF_OPTS="-w 50 -r 100"
 
 # Pull the binaries if not present
@@ -52,6 +56,9 @@ $J17/bin/javac HelloStream.java
 $J17/bin/jar cf hellostream.jar *.class
 
 # Go!
+
+lscpu | grep "Model name"
+echo
 
 echo "JDK 17"
 hyperfine $HF_OPTS "$J17/bin/java $OPTS HelloStream"

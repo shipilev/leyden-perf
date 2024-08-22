@@ -1,0 +1,33 @@
+Model name:                           AMD Ryzen Threadripper 3970X 32-Core Processor
+
+JDK 17
+Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      37.4 ms ±   0.2 ms    [User: 25.7 ms, System: 17.7 ms]
+  Range (min … max):    37.0 ms …  38.3 ms    100 runs
+ 
+JDK 21
+Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      37.6 ms ±   0.3 ms    [User: 25.5 ms, System: 18.1 ms]
+  Range (min … max):    37.1 ms …  38.5 ms    100 runs
+ 
+JDK MAINLINE
+Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      40.4 ms ±   0.3 ms    [User: 29.0 ms, System: 18.2 ms]
+  Range (min … max):    40.0 ms …  41.3 ms    100 runs
+ 
+LEYDEN OOB
+Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      37.6 ms ±   0.3 ms    [User: 29.1 ms, System: 15.6 ms]
+  Range (min … max):    37.0 ms …  38.2 ms    100 runs
+ 
+LEYDEN AOT MISCONFIGURED
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      88.7 ms ±   0.4 ms    [User: 91.6 ms, System: 19.5 ms]
+  Range (min … max):    88.0 ms …  90.0 ms    100 runs
+ 
+hello, world
+LEYDEN AOT ENABLED
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      33.4 ms ±   0.3 ms    [User: 26.1 ms, System: 14.2 ms]
+  Range (min … max):    32.9 ms …  34.3 ms    100 runs
+ 
