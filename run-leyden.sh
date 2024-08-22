@@ -90,7 +90,7 @@ run_with() {
 	hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
 
 	echo "LEYDEN CACHE DATA STORE"
- 	rm -f *.cds
+ 	rm -f app.cds*
 	hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS HelloStream"
 }
 
