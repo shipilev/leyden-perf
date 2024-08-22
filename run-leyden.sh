@@ -77,23 +77,21 @@ run_with() {
 	echo "JDK MAINLINE"
 	hyperfine $HF_OPTS "$JM/bin/java $OPTS HelloStream"
 
-	echo "LEYDEN OOTB"
+	echo "LEYDEN EMPTY"
 	hyperfine $HF_OPTS "$JL/bin/java $OPTS HelloStream"
 
-	echo "LEYDEN CDS OFF"
-	hyperfine $HF_OPTS "$JL/bin/java $OPTS -Xshare:off HelloStream"
-
-	# Run AOT
-	echo "LEYDEN AOT EMPTY FILE"
-	hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
-
 	# Build AOT
+	rm -f *.aot *.aotconf
 	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS HelloStream
 	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
 
 	# Run AOT
-	echo "LEYDEN AOT ENABLED"
+	echo "LEYDEN AOT CACHE"
 	hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
+
+	echo "LEYDEN CACHE DATA STORE"
+ 	rm -f *.cds
+	hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS HelloStream"
 }
 
 run_with "-Xmx256m -Xms256m -XX:+UseSerialGC"					| tee results-serial.txt
