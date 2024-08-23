@@ -2,37 +2,37 @@ Model name:                           AMD Ryzen Threadripper 3970X 32-Core Proce
 
 JDK 17
 Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      37.2 ms ±   0.2 ms    [User: 25.3 ms, System: 17.8 ms]
-  Range (min … max):    36.8 ms …  38.0 ms    100 runs
+  Time (mean ± σ):      37.8 ms ±   0.3 ms    [User: 25.6 ms, System: 18.0 ms]
+  Range (min … max):    37.2 ms …  38.7 ms    100 runs
  
 JDK 21
 Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      37.4 ms ±   0.2 ms    [User: 25.0 ms, System: 18.3 ms]
-  Range (min … max):    36.9 ms …  37.9 ms    100 runs
+  Time (mean ± σ):      37.7 ms ±   0.3 ms    [User: 26.3 ms, System: 17.3 ms]
+  Range (min … max):    37.2 ms …  39.2 ms    100 runs
  
 JDK 23
 Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      38.4 ms ±   0.4 ms    [User: 27.4 ms, System: 17.6 ms]
-  Range (min … max):    37.8 ms …  40.5 ms    100 runs
+  Time (mean ± σ):      39.0 ms ±   0.2 ms    [User: 27.0 ms, System: 18.6 ms]
+  Range (min … max):    38.6 ms …  39.7 ms    100 runs
  
 JDK MAINLINE
 Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      40.3 ms ±   0.2 ms    [User: 29.9 ms, System: 17.2 ms]
-  Range (min … max):    39.9 ms …  40.9 ms    100 runs
+  Time (mean ± σ):      40.3 ms ±   0.3 ms    [User: 28.9 ms, System: 18.2 ms]
+  Range (min … max):    39.9 ms …  41.3 ms    100 runs
  
 LEYDEN EMPTY
 Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      37.5 ms ±   0.5 ms    [User: 27.8 ms, System: 16.8 ms]
-  Range (min … max):    37.0 ms …  41.2 ms    100 runs
+  Time (mean ± σ):      36.9 ms ±   0.3 ms    [User: 28.6 ms, System: 15.6 ms]
+  Range (min … max):    36.3 ms …  37.8 ms    100 runs
  
 hello, world
 LEYDEN AOT CACHE
 Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      33.2 ms ±   0.2 ms    [User: 25.2 ms, System: 15.0 ms]
-  Range (min … max):    32.8 ms …  33.7 ms    100 runs
+  Time (mean ± σ):      33.1 ms ±   0.3 ms    [User: 24.8 ms, System: 15.2 ms]
+  Range (min … max):    32.5 ms …  33.7 ms    100 runs
  
 LEYDEN CACHE DATA STORE
 Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UseSerialGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      30.0 ms ±   2.4 ms    [User: 18.8 ms, System: 16.6 ms]
-  Range (min … max):    27.1 ms …  38.0 ms    100 runs
+  Time (mean ± σ):      29.4 ms ±   2.0 ms    [User: 18.3 ms, System: 16.4 ms]
+  Range (min … max):    26.6 ms …  37.6 ms    100 runs
  
