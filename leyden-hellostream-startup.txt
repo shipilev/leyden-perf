@@ -1,53 +1,98 @@
-[808201ns] Init: Logging initialized
-[1270030ns] Init: Globals Initialized
-[1493450ns] Init: Main thread attached
-[1513167ns] Init: Java-Level synchronization subsystem initialized
-[1584181ns] Init: VMThread/Deopt counters initialized
-[4314639ns] Init: Global modules initialized   <--------------------------------------
-[4403676ns] Init: Watcher thread started
-[4406532ns] Init: Main thread added to thread list
-[9256628ns] Init: init_globals2 completed  <--------------------------------------
-[9264432ns] Init: JFR init completed
-[9265504ns] Init: Caching Global Variables completed
-[9270544ns] Init: JVMTI raw monitor transition completed
-[9375612ns] Init: VM Thread started
-[9376824ns] Init: VM Info updated
-[9377235ns] Init: JVMTI initialized      
-[12012062ns] Init: Java Lang classes initialized  <--------------------------------------
-[12023624ns] Init: JNI functions quickened
-[12024396ns] Init: Stub generation frozen
-[12024646ns] Init: Basic init completed
-[12025588ns] Init: Post-initialization steps completed
-[12115998ns] Init: JDK signal support initialized
-[12132309ns] Init: Attach listener started
-[12133381ns] Init: Eager JVMTI agents started
-[12135084ns] Init: Arena chunk pool cleaner started
-[12197081ns] Init: Service Thread started
-[12275699ns] Init: Monitor deflation thread started
-[12276410ns] Init: Method Profiler started
-[12688125ns] Init: Compilation initialized
-[15978767ns] Init: AOT java.base preloaded classes done  <--------------------------------------
-[15978936ns] Init: String dedup thread started
-[15982063ns] Init: JSR 292 core classes initialized
-[17294232ns] Init: Phase 2 completed                   <--------------------------------------
-[17311875ns] Init: JFR 2 completed
-[17312797ns] Init: JVMTI notification for VM start completed
-[17331482ns] Init: Phase 3 completed
-[17332263ns] Init: Computing Java loaders completed
-[17411813ns] Init: Replay training initiated
-[17440597ns] Init: Replay training for preloaded classes initiated
-[17471395ns] Init: vm.Continuation initialized
-[17471605ns] Init: Module Path initialized
-[17471706ns] Init: JVMCI init completed
-[17471816ns] Init: Cached code precompilation completed
-[17476525ns] Init: Cached compiled methods preload completed
-[17476665ns] Init: Native heap trimmer initialized
-[17476895ns] Init: JVMTI is in live
-[17476996ns] Init: Perf memory is accessible
-[17477496ns] Init: JVMTI agents notified
-[17477757ns] Init: JFR Phase 3 completed
-[17545685ns] Init: Management initialized
-[17559501ns] Init: StatSampler engaged
-[17586131ns] Init: Post VM init hook ran
-[17587463ns] Init: Watcher thread ran all tasks
-[17635364ns] Init: COMPLETE
+[867160ns] Init: Logging initialized
+[1315383ns] Init: Globals Initialized
+[1542410ns] Init: Main thread attached
+[1563199ns] Init: Java-Level synchronization subsystem initialized
+[1635575ns] Init: VMThread/Deopt counters initialized
+[1636987ns]   Init: Start
+[1865547ns]   Init: Initials are done
+[1876237ns]   Init: Static Archive opened
+[2212700ns]   Init: Initial stubs initialized
+[3523655ns]   Init: Universe genesis                            <---- 0.7ms here
+[3616008ns]   Init: SC cache initialized
+[3882770ns]   Init: Finish
+[3885074ns] Init: Global modules initialized
+[3960326ns] Init: Watcher thread started
+[3964003ns] Init: Main thread added to thread list
+[3964123ns]   Init: Start
+[6784045ns]   Init: Universe2 init finished
+[6786419ns]   Init: Java classes init finished
+[7451139ns]   Init: Interpreter init finished                   <---- 0.6ms here
+[7454335ns]   Init: Reference processor init finished
+[7462490ns]   Init: JNI Handles init finished
+[7464835ns]   Init: VM stubs init finished
+[7467680ns]   Init: Compiler oracle init finished
+[7470175ns]   Init: Dependencies init finished
+[7487357ns]   Init: Compiler broker init finished
+[7488860ns]   Init: Training data init finished
+[7813901ns]   Init: Universe post-init init finished            <---- 0.4ms here
+[8126909ns]   Init: Compiler stubs init finished
+[8247216ns]   Init: Final stubs init finished
+[8260030ns]   Init: Adapter generation finished
+[8803472ns]   Init: Restoring archived MH intrinsics finished   <---- 0.6ms here
+[8805445ns]   Init: Finished
+[8805716ns] Init: init_globals2 completed
+[8811236ns] Init: JFR init completed
+[8811607ns] Init: Caching Global Variables completed
+[8820283ns] Init: JVMTI raw monitor transition completed
+[8903660ns] Init: VM Thread started
+[8905433ns] Init: VM Info updated
+[8906105ns] Init: JVMTI initialized
+[8906375ns]   Init: Start Java lang classes
+[9072417ns]   Init: String
+[9116570ns]   Init: System
+[9182544ns]   Init: Class
+[9240754ns]   Init: ThreadGroup
+[9345130ns]   Init: Thread
+[9514388ns]   Init: Box classes
+[9584149ns]   Init: Module
+[9592175ns]   Init: Unsafe constants
+[9920362ns]   Init: java lang ref
+[11544395ns]   Init: System.initPhase1 done                    <---- 1.2ms here
+[11551138ns]   Init: Versions done
+[11624025ns]   Init: Exceptions done
+[11624987ns] Init: Java Lang classes initialized               <---- 2.7ms in total
+[11636068ns] Init: JNI functions quickened
+[11636949ns] Init: Stub generation frozen
+[11637260ns] Init: Basic init completed
+[11638101ns] Init: Post-initialization steps completed
+[11706861ns] Init: JDK signal support initialized
+[11717521ns] Init: Attach listener started
+[11717921ns] Init: Eager JVMTI agents started
+[11719124ns] Init: Arena chunk pool cleaner started
+[11777664ns] Init: Service Thread started
+[11852955ns] Init: Monitor deflation thread started
+[11853647ns] Init: Method Profiler started
+[12229443ns] Init: Compilation initialized
+[12230896ns]   Init: AOTLinkedClassBulkLoader::init_javabase_preloaded_classes
+[14955389ns]   Init: maybe_init_or_link complete              <---- 2.7ms here
+[15472330ns]   Init: Finished
+[15472541ns] Init: AOT java.base preloaded classes done
+[15472631ns] Init: String dedup thread started
+[15474945ns] Init: JSR 292 core classes initialized
+[15475136ns]   Init: Phase 2 starts
+[15783434ns]   Init: System.initPhase2 done
+[15784537ns]   Init: Universe post module init finished
+[16783085ns]   Init: AOT linked classes loading done          <---- 1.0ms here
+[16784257ns]   Init: Finished
+[16784487ns] Init: Phase 2 completed
+[16802471ns] Init: JFR 2 completed
+[16803443ns] Init: JVMTI notification for VM start completed
+[16822970ns] Init: Phase 3 completed
+[16823741ns] Init: Computing Java loaders completed
+[16904533ns] Init: Replay training initiated
+[16935632ns] Init: Replay training for preloaded classes initiated
+[16970387ns] Init: vm.Continuation initialized
+[16970667ns] Init: Module Path initialized
+[16970838ns] Init: JVMCI init completed
+[16971008ns] Init: Cached code precompilation completed
+[16978703ns] Init: Cached compiled methods preload completed
+[16979424ns] Init: Native heap trimmer initialized
+[16979614ns] Init: JVMTI is in live
+[16979855ns] Init: Perf memory is accessible
+[16980376ns] Init: JVMTI agents notified
+[16980937ns] Init: JFR Phase 3 completed
+[17062851ns] Init: Management initialized
+[17073531ns] Init: StatSampler engaged
+[17097847ns] Init: Post VM init hook ran
+[17099289ns] Init: Watcher thread ran all tasks
+[17144805ns] Init: COMPLETE
