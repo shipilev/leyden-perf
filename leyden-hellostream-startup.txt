@@ -1,0 +1,53 @@
+[808201ns] Init: Logging initialized
+[1270030ns] Init: Globals Initialized
+[1493450ns] Init: Main thread attached
+[1513167ns] Init: Java-Level synchronization subsystem initialized
+[1584181ns] Init: VMThread/Deopt counters initialized
+[4314639ns] Init: Global modules initialized   <--------------------------------------
+[4403676ns] Init: Watcher thread started
+[4406532ns] Init: Main thread added to thread list
+[9256628ns] Init: init_globals2 completed  <--------------------------------------
+[9264432ns] Init: JFR init completed
+[9265504ns] Init: Caching Global Variables completed
+[9270544ns] Init: JVMTI raw monitor transition completed
+[9375612ns] Init: VM Thread started
+[9376824ns] Init: VM Info updated
+[9377235ns] Init: JVMTI initialized      
+[12012062ns] Init: Java Lang classes initialized  <--------------------------------------
+[12023624ns] Init: JNI functions quickened
+[12024396ns] Init: Stub generation frozen
+[12024646ns] Init: Basic init completed
+[12025588ns] Init: Post-initialization steps completed
+[12115998ns] Init: JDK signal support initialized
+[12132309ns] Init: Attach listener started
+[12133381ns] Init: Eager JVMTI agents started
+[12135084ns] Init: Arena chunk pool cleaner started
+[12197081ns] Init: Service Thread started
+[12275699ns] Init: Monitor deflation thread started
+[12276410ns] Init: Method Profiler started
+[12688125ns] Init: Compilation initialized
+[15978767ns] Init: AOT java.base preloaded classes done  <--------------------------------------
+[15978936ns] Init: String dedup thread started
+[15982063ns] Init: JSR 292 core classes initialized
+[17294232ns] Init: Phase 2 completed                   <--------------------------------------
+[17311875ns] Init: JFR 2 completed
+[17312797ns] Init: JVMTI notification for VM start completed
+[17331482ns] Init: Phase 3 completed
+[17332263ns] Init: Computing Java loaders completed
+[17411813ns] Init: Replay training initiated
+[17440597ns] Init: Replay training for preloaded classes initiated
+[17471395ns] Init: vm.Continuation initialized
+[17471605ns] Init: Module Path initialized
+[17471706ns] Init: JVMCI init completed
+[17471816ns] Init: Cached code precompilation completed
+[17476525ns] Init: Cached compiled methods preload completed
+[17476665ns] Init: Native heap trimmer initialized
+[17476895ns] Init: JVMTI is in live
+[17476996ns] Init: Perf memory is accessible
+[17477496ns] Init: JVMTI agents notified
+[17477757ns] Init: JFR Phase 3 completed
+[17545685ns] Init: Management initialized
+[17559501ns] Init: StatSampler engaged
+[17586131ns] Init: Post VM init hook ran
+[17587463ns] Init: Watcher thread ran all tasks
+[17635364ns] Init: COMPLETE
