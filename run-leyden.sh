@@ -5,37 +5,37 @@ sudo cpupower frequency-set -g performance
 # Config
 HF_OPTS="-w 50 -r 100"
 
-# Pull the binaries if not present
-if [ ! -d jdk-17 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ jdk-17/
-fi
-
-if [ ! -d jdk-21 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ jdk-21/
-fi
-
-if [ ! -d jdk-23 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk23/openjdk-jdk23-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ jdk-23/
-fi
-
-if [ ! -d jdk-mainline ]; then
-  curl https://builds.shipilev.net/openjdk-jdk/openjdk-jdk-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ jdk-mainline/
-fi
-
-if [ ! -d jdk-leyden ]; then
-  curl https://builds.shipilev.net/openjdk-jdk-leyden-premain/openjdk-jdk-leyden-premain-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ jdk-leyden/
-fi
-
 J17=jdk-17
 J21=jdk-21
 J23=jdk-23
 JM=jdk-mainline
 JL=jdk-leyden
+
+# Pull the binaries if not present
+if [ ! -d $J17 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J17/
+fi
+
+if [ ! -d $J21 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J21/
+fi
+
+if [ ! -d $J23 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk23/openjdk-jdk23-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J23/
+fi
+
+if [ ! -d $JM ]; then
+  curl https://builds.shipilev.net/openjdk-jdk/openjdk-jdk-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $JM/
+fi
+
+if [ ! -d $JL ]; then
+  curl https://builds.shipilev.net/openjdk-jdk-leyden-premain/openjdk-jdk-leyden-premain-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $JL/
+fi
 
 # Prepare JAR
 cat > HelloStream.java <<EOF
@@ -65,20 +65,23 @@ run_with() {
 	lscpu | grep "Model name"
 	echo
 
+	# Node locking
+	NODES=0-7
+
 	echo "JDK 17"
-	hyperfine $HF_OPTS "$J17/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J17/bin/java $OPTS HelloStream"
 
 	echo "JDK 21"
-	hyperfine $HF_OPTS "$J21/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS HelloStream"
 
 	echo "JDK 23"
-	hyperfine $HF_OPTS "$J23/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J23/bin/java $OPTS HelloStream"
 
 	echo "JDK MAINLINE"
-	hyperfine $HF_OPTS "$JM/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS HelloStream"
 
 	echo "LEYDEN EMPTY"
-	hyperfine $HF_OPTS "$JL/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS HelloStream"
 
 	# Build AOT
 	rm -f *.aot *.aotconf
@@ -87,11 +90,11 @@ run_with() {
 
 	# Run AOT
 	echo "LEYDEN AOT CACHE"
-	hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
 
 	echo "LEYDEN CACHE DATA STORE"
  	rm -f app.cds*
-	hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS HelloStream"
 }
 
 run_with "-Xmx256m -Xms256m -XX:+UseSerialGC"					| tee results-serial.txt
