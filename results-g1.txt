@@ -1,38 +1,37 @@
 Model name:                           AMD Ryzen 9 7950X3D 16-Core Processor
 
 JDK 17
-Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      27.8 ms ±   0.4 ms    [User: 18.1 ms, System: 13.3 ms]
-  Range (min … max):    26.8 ms …  28.9 ms    100 runs
+Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     304.6 ms ±   2.2 ms    [User: 750.2 ms, System: 60.4 ms]
+  Range (min … max):   294.3 ms … 309.5 ms    100 runs
  
 JDK 21
-Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      27.9 ms ±   0.4 ms    [User: 17.9 ms, System: 13.6 ms]
-  Range (min … max):    26.9 ms …  29.1 ms    100 runs
+Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     304.8 ms ±   2.4 ms    [User: 748.1 ms, System: 62.3 ms]
+  Range (min … max):   293.6 ms … 316.8 ms    100 runs
  
 JDK 23
-Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      28.8 ms ±   0.4 ms    [User: 18.9 ms, System: 14.0 ms]
-  Range (min … max):    27.8 ms …  29.9 ms    100 runs
+Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     312.6 ms ±   1.9 ms    [User: 753.4 ms, System: 61.5 ms]
+  Range (min … max):   309.0 ms … 318.2 ms    100 runs
  
 JDK MAINLINE
-Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      30.1 ms ±   0.5 ms    [User: 20.7 ms, System: 13.5 ms]
-  Range (min … max):    28.9 ms …  31.5 ms    100 runs
+Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     333.4 ms ±   1.9 ms    [User: 829.5 ms, System: 64.0 ms]
+  Range (min … max):   329.6 ms … 338.6 ms    100 runs
  
 LEYDEN EMPTY
-Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      27.0 ms ±   0.2 ms    [User: 19.8 ms, System: 11.8 ms]
-  Range (min … max):    26.6 ms …  27.8 ms    100 runs
+Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     330.3 ms ±   2.1 ms    [User: 874.1 ms, System: 62.1 ms]
+  Range (min … max):   326.7 ms … 340.3 ms    100 runs
  
-hello, world
+Hello there: hello, world
+[0.430s][warning][cds] java.lang.ClassNotFoundException: HelloStream
+[0.430s][warning][cds] Preload Warning: Cannot find HelloStream
 LEYDEN AOT CACHE
-Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      24.3 ms ±   0.2 ms    [User: 18.0 ms, System: 10.9 ms]
-  Range (min … max):    23.8 ms …  25.0 ms    100 runs
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java
+  Time (mean ± σ):     205.8 ms ±   1.9 ms    [User: 594.5 ms, System: 54.1 ms]
+  Range (min … max):   202.7 ms … 219.8 ms    100 runs
  
 LEYDEN CACHE DATA STORE
-Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      20.5 ms ±   0.2 ms    [User: 12.4 ms, System: 11.2 ms]
-  Range (min … max):    20.2 ms …  21.2 ms    100 runs
- 
+Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UseG1GC HelloStream.java

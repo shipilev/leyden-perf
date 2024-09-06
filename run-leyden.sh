@@ -48,7 +48,7 @@ public class HelloStream {
         var greeting = words.stream()
             .filter(w -> !w.contains("z"))
             .collect(Collectors.joining(", "));
-        System.out.println(greeting);  // hello, world
+        System.out.println("Hello there: " + greeting);  // hello, world
     }
 }
 EOF
@@ -56,10 +56,14 @@ EOF
 run_with() {
 	OPTS=$1
 
-	OPTS="$OPTS -cp hellostream.jar"
+
 	rm -f *.aot *.aotconf *.class *.jar
-	$J17/bin/javac HelloStream.java
-	$J17/bin/jar cf hellostream.jar *.class
+#	$J17/bin/javac HelloStream.java
+#	$J17/bin/jar cf hellostream.jar *.class
+#	APP="HelloStream"
+#	OPTS="$OPTS -cp hellostream.jar"
+
+	APP="HelloStream.java"
 
 	# Go!
 	lscpu | grep "Model name"
@@ -69,37 +73,39 @@ run_with() {
 	NODES=0-7
 
 	echo "JDK 17"
-	taskset -c $NODES hyperfine $HF_OPTS "$J17/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J17/bin/java $OPTS $APP"
 
 	echo "JDK 21"
-	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS $APP"
 
 	echo "JDK 23"
-	taskset -c $NODES hyperfine $HF_OPTS "$J23/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$J23/bin/java $OPTS $APP"
 
 	echo "JDK MAINLINE"
-	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
 	echo "LEYDEN EMPTY"
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
 	rm -f *.aot *.aotconf
-	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS HelloStream
+	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
 	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
 
 	# Run AOT
 	echo "LEYDEN AOT CACHE"
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
 	echo "LEYDEN CACHE DATA STORE"
  	rm -f app.cds*
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS HelloStream"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS $APP"
 }
 
-run_with "-Xmx256m -Xms256m -XX:+UseSerialGC"					| tee results-serial.txt
-run_with "-Xmx256m -Xms256m -XX:+UseParallelGC"					| tee results-parallel.txt
-run_with "-Xmx256m -Xms256m -XX:+UseG1GC"					| tee results-g1.txt
-run_with "-Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC" | tee results-epsilon.txt
+HEAP="-Xmx256m -Xms256m"
+
+run_with "$HEAP -XX:+UseSerialGC"					| tee results-serial.txt
+run_with "$HEAP -XX:+UseParallelGC"					| tee results-parallel.txt
+run_with "$HEAP -XX:+UseG1GC"		 				| tee results-g1.txt
+run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee results-epsilon.txt
 
 
