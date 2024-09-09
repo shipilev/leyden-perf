@@ -2,41 +2,41 @@ Model name:                           AMD Ryzen 9 7950X3D 16-Core Processor
 
 JDK 17
 Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      24.6 ms ±   0.3 ms    [User: 17.2 ms, System: 11.0 ms]
-  Range (min … max):    23.8 ms …  25.4 ms    50 runs
+  Time (mean ± σ):      24.6 ms ±   0.3 ms    [User: 17.0 ms, System: 11.2 ms]
+  Range (min … max):    23.9 ms …  25.9 ms    50 runs
  
 JDK 21
 Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      24.7 ms ±   0.4 ms    [User: 17.1 ms, System: 11.2 ms]
-  Range (min … max):    23.8 ms …  25.6 ms    50 runs
+  Time (mean ± σ):      24.5 ms ±   0.3 ms    [User: 16.3 ms, System: 11.8 ms]
+  Range (min … max):    23.8 ms …  25.0 ms    50 runs
  
 JDK 23
 Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      25.6 ms ±   0.4 ms    [User: 17.8 ms, System: 11.9 ms]
-  Range (min … max):    24.8 ms …  26.6 ms    50 runs
+  Time (mean ± σ):      25.3 ms ±   0.3 ms    [User: 18.5 ms, System: 10.9 ms]
+  Range (min … max):    24.6 ms …  25.9 ms    50 runs
  
 JDK MAINLINE
 Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      26.5 ms ±   0.4 ms    [User: 18.9 ms, System: 11.7 ms]
-  Range (min … max):    25.7 ms …  27.5 ms    50 runs
+  Time (mean ± σ):      26.7 ms ±   0.3 ms    [User: 19.2 ms, System: 11.6 ms]
+  Range (min … max):    26.0 ms …  27.6 ms    50 runs
  
 LEYDEN OUT-OF-BOX
 Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      23.5 ms ±   0.2 ms    [User: 18.8 ms, System: 9.4 ms]
-  Range (min … max):    23.0 ms …  24.2 ms    50 runs
+  Time (mean ± σ):      23.6 ms ±   0.2 ms    [User: 18.1 ms, System: 10.3 ms]
+  Range (min … max):    23.1 ms …  24.1 ms    50 runs
  
 Generating AOT...
 [0.002s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
 hello, world
-[0.001s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
+[0.002s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
 
 LEYDEN AOT CACHE
 Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      20.8 ms ±   0.2 ms    [User: 16.5 ms, System: 8.9 ms]
-  Range (min … max):    20.5 ms …  21.5 ms    50 runs
+  Time (mean ± σ):      20.9 ms ±   0.2 ms    [User: 15.8 ms, System: 9.7 ms]
+  Range (min … max):    20.6 ms …  21.5 ms    50 runs
  
 LEYDEN CACHE DATA STORE
 Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      17.2 ms ±   0.2 ms    [User: 10.1 ms, System: 9.9 ms]
-  Range (min … max):    16.9 ms …  18.1 ms    50 runs
+  Time (mean ± σ):      17.2 ms ±   0.2 ms    [User: 10.8 ms, System: 9.3 ms]
+  Range (min … max):    16.9 ms …  17.6 ms    50 runs
  

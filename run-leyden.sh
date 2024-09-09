@@ -1,6 +1,9 @@
 #/bin/bash
 
+# CPU config
+NODES=0-7
 sudo cpupower frequency-set -g performance
+sudo cpupower frequency-set -u 4200000
 
 # Config
 HF_OPTS="-w 10 -r 50"
@@ -70,9 +73,6 @@ run_with() {
 	# Go!
 	lscpu | grep "Model name"
 	echo
-
-	# Node locking
-	NODES=0-7
 
 	echo "JDK 17"
 	taskset -c $NODES hyperfine $HF_OPTS "$J17/bin/java $OPTS $APP"
