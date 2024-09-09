@@ -3,7 +3,8 @@
 sudo cpupower frequency-set -g performance
 
 # Config
-HF_OPTS="-w 50 -r 100"
+HF_OPTS="-w 10 -r 50"
+#HF_OPTS="-w 1 -r 5"
 
 J17=jdk-17
 J21=jdk-21
@@ -37,6 +38,8 @@ if [ ! -d $JL ]; then
   mv jdk/ $JL/
 fi
 
+#JL=~/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
+
 # Prepare JAR
 cat > HelloStream.java <<EOF
 import java.util.*;
@@ -48,7 +51,7 @@ public class HelloStream {
         var greeting = words.stream()
             .filter(w -> !w.contains("z"))
             .collect(Collectors.joining(", "));
-        System.out.println("Hello there: " + greeting);  // hello, world
+        System.out.println(greeting);  // hello, world
     }
 }
 EOF
@@ -56,14 +59,13 @@ EOF
 run_with() {
 	OPTS=$1
 
-
 	rm -f *.aot *.aotconf *.class *.jar
-#	$J17/bin/javac HelloStream.java
-#	$J17/bin/jar cf hellostream.jar *.class
-#	APP="HelloStream"
-#	OPTS="$OPTS -cp hellostream.jar"
+	$J17/bin/javac HelloStream.java
+	$J17/bin/jar cf hellostream.jar *.class
+	OPTS="$OPTS -cp hellostream.jar"
+	APP="HelloStream"
 
-	APP="HelloStream.java"
+#	APP="HelloStream.java"
 
 	# Go!
 	lscpu | grep "Model name"
@@ -84,13 +86,15 @@ run_with() {
 	echo "JDK MAINLINE"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
-	echo "LEYDEN EMPTY"
+	echo "LEYDEN OUT-OF-BOX"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
+        echo "Generating AOT..."
 	rm -f *.aot *.aotconf
-	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+	time $JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	time $JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+        echo
 
 	# Run AOT
 	echo "LEYDEN AOT CACHE"

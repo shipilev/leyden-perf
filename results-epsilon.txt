@@ -1,39 +1,42 @@
 Model name:                           AMD Ryzen 9 7950X3D 16-Core Processor
 
 JDK 17
-Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     292.6 ms ±   5.8 ms    [User: 693.0 ms, System: 55.3 ms]
-  Range (min … max):   281.1 ms … 307.6 ms    100 runs
+Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      24.6 ms ±   0.3 ms    [User: 17.2 ms, System: 11.0 ms]
+  Range (min … max):    23.8 ms …  25.4 ms    50 runs
  
 JDK 21
-Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     292.9 ms ±   6.0 ms    [User: 692.6 ms, System: 55.9 ms]
-  Range (min … max):   282.1 ms … 318.8 ms    100 runs
+Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      24.7 ms ±   0.4 ms    [User: 17.1 ms, System: 11.2 ms]
+  Range (min … max):    23.8 ms …  25.6 ms    50 runs
  
 JDK 23
-Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     307.5 ms ±   1.7 ms    [User: 711.1 ms, System: 60.7 ms]
-  Range (min … max):   303.7 ms … 312.2 ms    100 runs
+Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      25.6 ms ±   0.4 ms    [User: 17.8 ms, System: 11.9 ms]
+  Range (min … max):    24.8 ms …  26.6 ms    50 runs
  
 JDK MAINLINE
-Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     326.4 ms ±   4.4 ms    [User: 778.6 ms, System: 61.7 ms]
-  Range (min … max):   313.6 ms … 335.0 ms    100 runs
+Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      26.5 ms ±   0.4 ms    [User: 18.9 ms, System: 11.7 ms]
+  Range (min … max):    25.7 ms …  27.5 ms    50 runs
  
-LEYDEN EMPTY
-Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     323.1 ms ±   4.0 ms    [User: 822.8 ms, System: 63.3 ms]
-  Range (min … max):   311.2 ms … 328.8 ms    100 runs
+LEYDEN OUT-OF-BOX
+Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      23.5 ms ±   0.2 ms    [User: 18.8 ms, System: 9.4 ms]
+  Range (min … max):    23.0 ms …  24.2 ms    50 runs
  
+Generating AOT...
 [0.002s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
-Hello there: hello, world
-[0.002s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
-[0.416s][warning][cds    ] java.lang.ClassNotFoundException: HelloStream
-[0.416s][warning][cds    ] Preload Warning: Cannot find HelloStream
+hello, world
+[0.001s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
+
 LEYDEN AOT CACHE
-Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
-  Time (mean ± σ):     195.6 ms ±   1.8 ms    [User: 551.9 ms, System: 50.4 ms]
-  Range (min … max):   192.3 ms … 203.6 ms    100 runs
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      20.8 ms ±   0.2 ms    [User: 16.5 ms, System: 8.9 ms]
+  Range (min … max):    20.5 ms …  21.5 ms    50 runs
  
 LEYDEN CACHE DATA STORE
-Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC HelloStream.java
+Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      17.2 ms ±   0.2 ms    [User: 10.1 ms, System: 9.9 ms]
+  Range (min … max):    16.9 ms …  18.1 ms    50 runs
+ 
