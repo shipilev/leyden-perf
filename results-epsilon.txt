@@ -1,29 +1,34 @@
-Model name:                           AMD Ryzen 9 7950X3D 16-Core Processor
+Model name:                           AMD Ryzen 9 5950X 16-Core Processor
 
 JDK 17
 Benchmark 1: jdk-17/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      24.6 ms ±   0.3 ms    [User: 17.0 ms, System: 11.2 ms]
-  Range (min … max):    23.9 ms …  25.9 ms    50 runs
+  Time (mean ± σ):      42.0 ms ±   0.5 ms    [User: 39.1 ms, System: 17.9 ms]
+  Range (min … max):    41.1 ms …  43.4 ms    100 runs
  
 JDK 21
 Benchmark 1: jdk-21/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      24.5 ms ±   0.3 ms    [User: 16.3 ms, System: 11.8 ms]
-  Range (min … max):    23.8 ms …  25.0 ms    50 runs
+  Time (mean ± σ):      36.4 ms ±   0.6 ms    [User: 25.6 ms, System: 17.0 ms]
+  Range (min … max):    35.1 ms …  37.6 ms    100 runs
  
 JDK 23
 Benchmark 1: jdk-23/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      25.3 ms ±   0.3 ms    [User: 18.5 ms, System: 10.9 ms]
-  Range (min … max):    24.6 ms …  25.9 ms    50 runs
+  Time (mean ± σ):      38.0 ms ±   0.4 ms    [User: 26.8 ms, System: 18.0 ms]
+  Range (min … max):    36.9 ms …  39.2 ms    100 runs
  
 JDK MAINLINE
 Benchmark 1: jdk-mainline/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      26.7 ms ±   0.3 ms    [User: 19.2 ms, System: 11.6 ms]
-  Range (min … max):    26.0 ms …  27.6 ms    50 runs
+  Time (mean ± σ):      39.1 ms ±   0.5 ms    [User: 28.0 ms, System: 17.3 ms]
+  Range (min … max):    38.2 ms …  40.7 ms    100 runs
+ 
+JDK MAINLINE ArchiveRelocationMode=0
+Benchmark 1: jdk-mainline/bin/java -XX:+UnlockDiagnosticVMOptions -XX:ArchiveRelocationMode=0 -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      34.2 ms ±   0.5 ms    [User: 26.4 ms, System: 14.4 ms]
+  Range (min … max):    33.6 ms …  36.2 ms    100 runs
  
 LEYDEN OUT-OF-BOX
 Benchmark 1: jdk-leyden/bin/java -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      23.6 ms ±   0.2 ms    [User: 18.1 ms, System: 10.3 ms]
-  Range (min … max):    23.1 ms …  24.1 ms    50 runs
+  Time (mean ± σ):      35.3 ms ±   0.4 ms    [User: 27.4 ms, System: 15.4 ms]
+  Range (min … max):    34.7 ms …  37.5 ms    100 runs
  
 Generating AOT...
 [0.002s][warning][gc,init] Consider enabling -XX:+AlwaysPreTouch to avoid memory commit hiccups
@@ -32,11 +37,11 @@ hello, world
 
 LEYDEN AOT CACHE
 Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      20.9 ms ±   0.2 ms    [User: 15.8 ms, System: 9.7 ms]
-  Range (min … max):    20.6 ms …  21.5 ms    50 runs
+  Time (mean ± σ):      31.0 ms ±   0.4 ms    [User: 24.7 ms, System: 13.7 ms]
+  Range (min … max):    30.4 ms …  33.1 ms    100 runs
  
 LEYDEN CACHE DATA STORE
 Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xmx256m -Xms256m -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      17.2 ms ±   0.2 ms    [User: 10.8 ms, System: 9.3 ms]
-  Range (min … max):    16.9 ms …  17.6 ms    50 runs
+  Time (mean ± σ):      25.8 ms ±   0.3 ms    [User: 15.8 ms, System: 14.2 ms]
+  Range (min … max):    24.5 ms …  27.3 ms    100 runs
  

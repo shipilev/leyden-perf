@@ -1,12 +1,12 @@
 #/bin/bash
 
 # CPU config
-NODES=0-7
+NODES=0-16
 sudo cpupower frequency-set -g performance
-sudo cpupower frequency-set -u 4200000
+#sudo cpupower frequency-set -u 4200000
 
 # Config
-HF_OPTS="-w 10 -r 50"
+HF_OPTS="-w 10 -r 100"
 #HF_OPTS="-w 1 -r 5"
 
 J17=jdk-17
@@ -17,7 +17,7 @@ JL=jdk-leyden
 
 # Pull the binaries if not present
 if [ ! -d $J17 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
+  curl https://builds.shipilev.net/openjdk-jdk17-dev/openjdk-jdk17-dev-linux-x86_64-server.tar.xz | tar xJf -
   mv jdk/ $J17/
 fi
 
@@ -41,7 +41,18 @@ if [ ! -d $JL ]; then
   mv jdk/ $JL/
 fi
 
-#JL=~/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
+# Prepare ramdisk, if needed
+R=ramdisk
+rm -rf $R
+sudo mount -o size=8G -t tmpfs none $R
+cd $R
+
+cp -r ../$J17/ $J17/ &
+cp -r ../$J21/ $J21/ &
+cp -r ../$J23/ $J23/ &
+cp -r ../$JM/  $JM/  &
+cp -r ../$JL/  $JL/  &
+wait
 
 # Prepare JAR
 cat > HelloStream.java <<EOF
@@ -86,6 +97,9 @@ run_with() {
 	echo "JDK MAINLINE"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
+	echo "JDK MAINLINE ArchiveRelocationMode=0"
+	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:+UnlockDiagnosticVMOptions -XX:ArchiveRelocationMode=0 $OPTS $APP"
+
 	echo "LEYDEN OUT-OF-BOX"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
@@ -107,9 +121,9 @@ run_with() {
 
 HEAP="-Xmx256m -Xms256m"
 
-run_with "$HEAP -XX:+UseSerialGC"					| tee results-serial.txt
-run_with "$HEAP -XX:+UseParallelGC"					| tee results-parallel.txt
-run_with "$HEAP -XX:+UseG1GC"		 				| tee results-g1.txt
-run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee results-epsilon.txt
+run_with "$HEAP -XX:+UseSerialGC"					| tee ../results-serial.txt
+run_with "$HEAP -XX:+UseParallelGC"					| tee ../results-parallel.txt
+run_with "$HEAP -XX:+UseG1GC"		 				| tee ../results-g1.txt
+run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee ../results-epsilon.txt
 
-
+cd ..
