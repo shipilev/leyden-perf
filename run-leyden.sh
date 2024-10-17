@@ -6,7 +6,7 @@ sudo cpupower frequency-set -g performance
 #sudo cpupower frequency-set -u 4200000
 
 # Config
-HF_OPTS="-w 10 -r 100"
+HF_OPTS="-w 30 -r 100"
 #HF_OPTS="-w 1 -r 5"
 
 J17=jdk-17
@@ -40,19 +40,6 @@ if [ ! -d $JL ]; then
   curl https://builds.shipilev.net/openjdk-jdk-leyden-premain/openjdk-jdk-leyden-premain-linux-x86_64-server.tar.xz | tar xJf -
   mv jdk/ $JL/
 fi
-
-# Prepare ramdisk, if needed
-R=ramdisk
-rm -rf $R
-sudo mount -o size=8G -t tmpfs none $R
-cd $R
-
-cp -r ../$J17/ $J17/ &
-cp -r ../$J21/ $J21/ &
-cp -r ../$J23/ $J23/ &
-cp -r ../$JM/  $JM/  &
-cp -r ../$JL/  $JL/  &
-wait
 
 # Prepare JAR
 cat > HelloStream.java <<EOF
@@ -119,7 +106,7 @@ run_with() {
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS $APP"
 }
 
-HEAP="-Xmx256m -Xms256m"
+HEAP="-Xms64m -Xmx64m"
 
 run_with "$HEAP -XX:+UseSerialGC"					| tee ../results-serial.txt
 run_with "$HEAP -XX:+UseParallelGC"					| tee ../results-parallel.txt
