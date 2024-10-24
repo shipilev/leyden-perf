@@ -1,0 +1,45 @@
+Model name:                           AMD Ryzen 9 5950X 16-Core Processor
+
+JDK 17
+Benchmark 1: jdk-17/bin/java -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      45.7 ms ±   0.7 ms    [User: 41.4 ms, System: 19.7 ms]
+  Range (min … max):    44.4 ms …  47.4 ms    100 runs
+ 
+JDK 21
+Benchmark 1: jdk-21/bin/java -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      47.5 ms ±   0.6 ms    [User: 45.1 ms, System: 20.4 ms]
+  Range (min … max):    46.5 ms …  49.0 ms    100 runs
+ 
+JDK 23
+Benchmark 1: jdk-23/bin/java -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      49.7 ms ±   0.6 ms    [User: 46.0 ms, System: 22.6 ms]
+  Range (min … max):    48.4 ms …  51.0 ms    100 runs
+ 
+JDK MAINLINE
+Benchmark 1: jdk-mainline/bin/java -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      53.5 ms ±   0.3 ms    [User: 28.5 ms, System: 20.5 ms]
+  Range (min … max):    52.6 ms …  54.8 ms    100 runs
+ 
+JDK MAINLINE ArchiveRelocationMode=0
+Benchmark 1: jdk-mainline/bin/java -XX:+UnlockDiagnosticVMOptions -XX:ArchiveRelocationMode=0 -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      48.8 ms ±   0.8 ms    [User: 27.4 ms, System: 17.5 ms]
+  Range (min … max):    47.9 ms …  53.8 ms    100 runs
+ 
+LEYDEN OUT-OF-BOX
+Benchmark 1: jdk-leyden/bin/java -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      49.7 ms ±   0.6 ms    [User: 27.7 ms, System: 18.4 ms]
+  Range (min … max):    48.7 ms …  51.2 ms    100 runs
+ 
+Generating AOT...
+hello, world
+
+LEYDEN AOT CACHE
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      35.1 ms ±   0.6 ms    [User: 25.5 ms, System: 16.3 ms]
+  Range (min … max):    34.5 ms …  36.9 ms    100 runs
+ 
+LEYDEN CACHE DATA STORE
+Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xms64m -Xmx64m -XX:+UseShenandoahGC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      30.7 ms ±   1.5 ms    [User: 19.0 ms, System: 17.8 ms]
+  Range (min … max):    29.2 ms …  41.7 ms    100 runs
+ 

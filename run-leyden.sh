@@ -108,9 +108,10 @@ run_with() {
 
 HEAP="-Xms64m -Xmx64m"
 
-run_with "$HEAP -XX:+UseSerialGC"					| tee ../results-serial.txt
-run_with "$HEAP -XX:+UseParallelGC"					| tee ../results-parallel.txt
-run_with "$HEAP -XX:+UseG1GC"		 				| tee ../results-g1.txt
-run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee ../results-epsilon.txt
+run_with "$HEAP -XX:+UseSerialGC"					| tee results-serial.txt
+run_with "$HEAP -XX:+UseParallelGC"					| tee results-parallel.txt
+run_with "$HEAP -XX:+UseG1GC"		 				| tee results-g1.txt
+run_with "$HEAP -XX:+UseShenandoahGC"		 			| tee results-shenandoah.txt
+run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee results-epsilon.txt
 
 cd ..
