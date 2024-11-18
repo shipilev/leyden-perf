@@ -81,13 +81,20 @@ run_with() {
 	echo "JDK 23"
 	taskset -c $NODES hyperfine $HF_OPTS "$J23/bin/java $OPTS $APP"
 
-	echo "JDK MAINLINE"
+	echo "JDK MAINLINE, OUT OF BOX"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
-	echo "JDK MAINLINE ArchiveRelocationMode=0"
-	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:+UnlockDiagnosticVMOptions -XX:ArchiveRelocationMode=0 $OPTS $APP"
+	# Build AOT
+        echo "Generating AOT..."
+	rm -f *.aot *.aotconf
+	time $JM/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	time $JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+        echo
 
-	echo "LEYDEN OUT-OF-BOX"
+	echo "JDK MAINLINE, AOT CACHE"
+	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:AOTCache=app.aot $OPTS $APP"
+
+	echo "LEYDEN, OUT OF BOX"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
@@ -98,10 +105,10 @@ run_with() {
         echo
 
 	# Run AOT
-	echo "LEYDEN AOT CACHE"
+	echo "LEYDEN, AOT CACHE"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-	echo "LEYDEN CACHE DATA STORE"
+	echo "LEYDEN, CACHE DATA STORE"
  	rm -f app.cds*
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS $APP"
 }
