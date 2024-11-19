@@ -87,26 +87,26 @@ run_with() {
 	# Build AOT
         echo "Generating AOT..."
 	rm -f *.aot *.aotconf
-	time $JM/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-	time $JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+	$JM/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	$JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
         echo
 
 	echo "JDK MAINLINE, AOT CACHE"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-	echo "LEYDEN, OUT OF BOX"
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
+	#echo "LEYDEN, OUT OF BOX"
+	#taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
-        echo "Generating AOT..."
-	rm -f *.aot *.aotconf
-	time $JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-	time $JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
-        echo
+        #echo "Generating AOT..."
+	#rm -f *.aot *.aotconf
+	#$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	#$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+        #echo
 
 	# Run AOT
-	echo "LEYDEN, AOT CACHE"
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS $APP"
+	#echo "LEYDEN, AOT CACHE"
+	#taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
 	echo "LEYDEN, CACHE DATA STORE"
  	rm -f app.cds*
