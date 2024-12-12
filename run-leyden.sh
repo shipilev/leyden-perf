@@ -11,7 +11,7 @@ HF_OPTS="-w 30 -r 100"
 
 J17=jdk-17
 J21=jdk-21
-J23=jdk-23
+J24=jdk-24
 JM=jdk-mainline
 JL=jdk-leyden
 
@@ -26,9 +26,9 @@ if [ ! -d $J21 ]; then
   mv jdk/ $J21/
 fi
 
-if [ ! -d $J23 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk23/openjdk-jdk23-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ $J23/
+if [ ! -d $J24 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk24/openjdk-jdk24-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J24/
 fi
 
 if [ ! -d $JM ]; then
@@ -78,8 +78,8 @@ run_with() {
 	echo "JDK 21"
 	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS $APP"
 
-	echo "JDK 23"
-	taskset -c $NODES hyperfine $HF_OPTS "$J23/bin/java $OPTS $APP"
+	echo "JDK 24"
+	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java $OPTS $APP"
 
 	echo "JDK MAINLINE, OUT OF BOX"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
