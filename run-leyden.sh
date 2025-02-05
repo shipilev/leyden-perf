@@ -1,7 +1,8 @@
 #/bin/bash
 
 # CPU config
-NODES=0-15
+#NODES=0-15
+NODES=0-31
 sudo cpupower frequency-set -g performance
 #sudo cpupower frequency-set -u 4200000
 
