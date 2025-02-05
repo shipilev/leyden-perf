@@ -1,36 +1,50 @@
 Model name:                           AMD Ryzen 9 5950X 16-Core Processor
 
 JDK 17
-Benchmark 1: jdk-17/bin/java -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      35.5 ms ±   0.4 ms    [User: 22.4 ms, System: 17.8 ms]
-  Range (min … max):    34.5 ms …  36.9 ms    100 runs
+Benchmark 1: jdk-17/bin/java  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      39.6 ms ±   0.5 ms    [User: 23.4 ms, System: 21.0 ms]
+  Range (min … max):    38.7 ms …  40.8 ms    100 runs
  
 JDK 21
-Benchmark 1: jdk-21/bin/java -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      38.6 ms ±   0.5 ms    [User: 26.6 ms, System: 18.3 ms]
-  Range (min … max):    37.8 ms …  40.1 ms    100 runs
+Benchmark 1: jdk-21/bin/java  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      42.6 ms ±   0.5 ms    [User: 27.4 ms, System: 21.5 ms]
+  Range (min … max):    41.3 ms …  43.6 ms    100 runs
  
 JDK 24
-Benchmark 1: jdk-24/bin/java -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      34.9 ms ±   0.3 ms    [User: 26.9 ms, System: 18.7 ms]
-  Range (min … max):    34.3 ms …  35.7 ms    100 runs
- 
-JDK MAINLINE, OUT OF BOX
-Benchmark 1: jdk-mainline/bin/java -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      35.2 ms ±   0.3 ms    [User: 27.1 ms, System: 18.9 ms]
-  Range (min … max):    34.7 ms …  36.4 ms    100 runs
+Benchmark 1: jdk-24/bin/java  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      38.9 ms ±   0.3 ms    [User: 27.7 ms, System: 21.8 ms]
+  Range (min … max):    38.0 ms …  39.7 ms    100 runs
  
 Generating AOT...
 hello, world
 AOTCache creation is complete: app.aot
 
-JDK MAINLINE, AOT CACHE
-Benchmark 1: jdk-mainline/bin/java -XX:AOTCache=app.aot -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      31.2 ms ±   0.2 ms    [User: 23.9 ms, System: 16.2 ms]
-  Range (min … max):    30.7 ms …  31.7 ms    100 runs
+JDK 24, AOT CACHE ENABLED
+Benchmark 1: jdk-24/bin/java -XX:AOTCache=app.aot  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      25.9 ms ±   0.4 ms    [User: 14.7 ms, System: 17.3 ms]
+  Range (min … max):    25.0 ms …  27.1 ms    100 runs
  
-LEYDEN, CACHE DATA STORE
-Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds -Xms64m -Xmx64m -XX:+UseG1GC -cp hellostream.jar HelloStream
-  Time (mean ± σ):      28.3 ms ±   0.7 ms    [User: 17.7 ms, System: 16.3 ms]
-  Range (min … max):    27.3 ms …  30.2 ms    100 runs
+JDK MAINLINE
+Benchmark 1: jdk-mainline/bin/java  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      37.9 ms ±   0.4 ms    [User: 28.0 ms, System: 21.7 ms]
+  Range (min … max):    37.3 ms …  39.9 ms    100 runs
+ 
+Generating AOT...
+hello, world
+AOTCache creation is complete: app.aot
+
+JDK MAINLINE, AOT CACHE ENABLED
+Benchmark 1: jdk-mainline/bin/java -XX:AOTCache=app.aot  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      25.4 ms ±   0.4 ms    [User: 15.2 ms, System: 17.3 ms]
+  Range (min … max):    24.6 ms …  26.4 ms    100 runs
+ 
+LEYDEN
+Benchmark 1: jdk-leyden/bin/java  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      39.4 ms ±   0.4 ms    [User: 26.7 ms, System: 19.4 ms]
+  Range (min … max):    38.6 ms …  41.0 ms    100 runs
+ 
+LEYDEN, CACHE DATA STORE ENABLED
+Benchmark 1: jdk-leyden/bin/java -XX:CacheDataStore=app.cds  -XX:+UseG1GC -cp hellostream.jar HelloStream
+  Time (mean ± σ):      30.8 ms ±   0.4 ms    [User: 17.7 ms, System: 19.1 ms]
+  Range (min … max):    29.8 ms …  32.4 ms    100 runs
  

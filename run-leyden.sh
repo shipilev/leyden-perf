@@ -81,7 +81,17 @@ run_with() {
 	echo "JDK 24"
 	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java $OPTS $APP"
 
-	echo "JDK MAINLINE, OUT OF BOX"
+	# Build AOT
+        echo "Generating AOT..."
+	rm -f *.aot *.aotconf
+	$J24/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	$J24/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+        echo
+
+	echo "JDK 24, AOT CACHE ENABLED"
+	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java -XX:AOTCache=app.aot $OPTS $APP"
+
+	echo "JDK MAINLINE"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
 	# Build AOT
@@ -91,29 +101,20 @@ run_with() {
 	$JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
         echo
 
-	echo "JDK MAINLINE, AOT CACHE"
+	echo "JDK MAINLINE, AOT CACHE ENABLED"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-	#echo "LEYDEN, OUT OF BOX"
-	#taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
+	echo "LEYDEN"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
-	# Build AOT
-        #echo "Generating AOT..."
-	#rm -f *.aot *.aotconf
-	#$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-	#$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
-        #echo
-
-	# Run AOT
-	#echo "LEYDEN, AOT CACHE"
-	#taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $OPTS $APP"
-
-	echo "LEYDEN, CACHE DATA STORE"
+	echo "LEYDEN, CACHE DATA STORE ENABLED"
  	rm -f app.cds*
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS $APP"
+
 }
 
-HEAP="-Xms64m -Xmx64m"
+#HEAP="-Xms64m -Xmx64m"
+#HEAP="-Xmx1g"
 
 run_with "$HEAP -XX:+UseSerialGC"					| tee results-serial.txt
 run_with "$HEAP -XX:+UseParallelGC"					| tee results-parallel.txt
