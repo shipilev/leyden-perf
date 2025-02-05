@@ -1,7 +1,7 @@
 #/bin/bash
 
 # CPU config
-NODES=0-16
+NODES=0-15
 sudo cpupower frequency-set -g performance
 #sudo cpupower frequency-set -u 4200000
 
@@ -60,11 +60,18 @@ EOF
 run_with() {
 	OPTS=$1
 
+	# Work around JDK-8348278: Trim InitialRAMPercentage to improve startup in default modes
+	OPTS="$OPTS -Xmx64m -Xms64m"
+
 	rm -f *.aot *.aotconf *.class *.jar
 	$J17/bin/javac HelloStream.java
 	$J17/bin/jar cf hellostream.jar *.class
 	OPTS="$OPTS -cp hellostream.jar"
 	APP="HelloStream"
+
+	# Work around JDK-8348752: Enable -XX:+AOTClassLinking by default when -XX:AOTMode is specified
+	# Drop once we merge leyden/premain from mainline
+	LEYDEN_OPTS="$OPTS -XX:+AOTClassLinking"
 
 #	APP="HelloStream.java"
 
@@ -107,19 +114,26 @@ run_with() {
 	echo "LEYDEN"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
+	# Build AOT
+        echo "Generating AOT..."
+	rm -f *.aot *.aotconf
+	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS $APP
+	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS -XX:AOTCache=app.aot
+        echo
+
+	echo "LEYDEN, AOT CACHE ENABLED"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $LEYDEN_OPTS $APP"
+
 	echo "LEYDEN, CACHE DATA STORE ENABLED"
  	rm -f app.cds*
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $OPTS $APP"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $LEYDEN_OPTS $APP"
 
 }
 
-#HEAP="-Xms64m -Xmx64m"
-#HEAP="-Xmx1g"
-
-run_with "$HEAP -XX:+UseSerialGC"					| tee results-serial.txt
-run_with "$HEAP -XX:+UseParallelGC"					| tee results-parallel.txt
-run_with "$HEAP -XX:+UseG1GC"		 				| tee results-g1.txt
-run_with "$HEAP -XX:+UseShenandoahGC"		 			| tee results-shenandoah.txt
-run_with "$HEAP -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee results-epsilon.txt
+run_with "-XX:+UseSerialGC"					| tee results-serial.txt
+run_with "-XX:+UseParallelGC"					| tee results-parallel.txt
+run_with "-XX:+UseG1GC"		 				| tee results-g1.txt
+run_with "-XX:+UseShenandoahGC"		 			| tee results-shenandoah.txt
+run_with "-XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee results-epsilon.txt
 
 cd ..
