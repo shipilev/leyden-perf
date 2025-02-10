@@ -64,16 +64,13 @@ run_with() {
 	# Work around JDK-8348278: Trim InitialRAMPercentage to improve startup in default modes
 	OPTS="$OPTS -Xmx64m -Xms64m"
 
+	LEYDEN_OPTS="$OPTS"
+
 	rm -f *.aot *.aotconf *.class *.jar
 	$J17/bin/javac HelloStream.java
 	$J17/bin/jar cf hellostream.jar *.class
 	OPTS="$OPTS -cp hellostream.jar"
 	APP="HelloStream"
-
-	# Work around JDK-8348752: Enable -XX:+AOTClassLinking by default when -XX:AOTMode is specified
-	# Drop once we merge leyden/premain from mainline
-	LEYDEN_OPTS="$OPTS -XX:+AOTClassLinking"
-
 #	APP="HelloStream.java"
 
 	# Go!
