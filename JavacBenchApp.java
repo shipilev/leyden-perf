@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,16 +96,15 @@ public class JavacBenchApp {
         }
     }
 
-    public Map<String, byte[]> compile() {
+    public byte[] compile(SourceFile sf) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> ds = new DiagnosticCollector<>();
-        Collection<SourceFile> sourceFiles = sources;
+        Collection<SourceFile> sourceFiles = Collections.singletonList(sf);
 
         try (FileManager fileManager = new FileManager(compiler.getStandardFileManager(ds, null, null))) {
-            //JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, List.of("--release", "21"), null, sourceFiles);
             JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, sourceFiles);
             if (task.call()) {
-                return fileManager.getCompiledClasses();
+                return fileManager.getCompiledClasses().values().iterator().next();
             } else {
                 for (Diagnostic<? extends JavaFileObject> d : ds.getDiagnostics()) {
                     System.out.format("Line: %d, %s in %s", d.getLineNumber(), d.getMessage(null), d.getSource().getName());
@@ -116,7 +116,6 @@ public class JavacBenchApp {
         }
     }
 
-    List<SourceFile> sources;
 
     static final String imports = """
         import java.lang.*;
@@ -189,6 +188,8 @@ public class JavacBenchApp {
 
     Random r =  new Random();
 
+    List<SourceFile> sources;
+
     void setup(int count) {
         sources = new ArrayList<>(count);
         int base = r.nextInt(1024*1024) ;
@@ -197,31 +198,24 @@ public class JavacBenchApp {
             String source = imports + "public class Test" + idx + " {" + testClassBody + "}";
             sources.add(new SourceFile("Test" + idx, source));
         }
-
-        sources.add(new SourceFile("Sanity", sanitySource));
     }
 
     public static void main(String args[]) throws Throwable {
-        long started = System.currentTimeMillis();
         JavacBenchApp bench = new JavacBenchApp();
 
-        int count = 0;
         if (args.length > 0) {
-            count = Integer.parseInt(args[0]);
+            int count = Integer.parseInt(args[0]);
             if (count >= 0) {
                 bench.setup(count);
-                Map<String, byte[]> allClasses = bench.compile();
-                int hc = 0;
-                for (byte[] bs : allClasses.values()) {
-                    hc ^= Arrays.hashCode(bs);
-                }
-                System.out.println("Hashcode: " + hc);
+        	long started = System.nanoTime();
+		for (int i = 0; i < bench.sources.size(); i++) {
+        		long startedIter = System.nanoTime();
+			SourceFile sf = bench.sources.get(i);
+                	byte[] compile = bench.compile(sf);
+        		long finishedIter = System.nanoTime();
+			System.out.println(i + " " + (finishedIter - started)/1000/1000 + " " + " " + (finishedIter - startedIter) / 1000 + " " + Arrays.hashCode(compile));
+		}
             }
-        }
-        if (System.getProperty("JavacBenchApp.silent") == null) {
-            // Set this property when running with "perf stat", etc
-            long elapsed = System.currentTimeMillis() - started;
-            System.out.println("Generated source code for " + bench.sources.size() + " classes and compiled them in " + elapsed + " ms");
         }
     }
 }
