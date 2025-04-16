@@ -1,10 +1,9 @@
 #/bin/bash
 
 # CPU config
-#NODES=0-15
-NODES=0-31
+NODES=0-15
+#NODES=0-31
 sudo cpupower frequency-set -g performance
-#sudo cpupower frequency-set -u 4200000
 
 # Config
 HF_OPTS="-w 30 -r 100"
@@ -15,6 +14,7 @@ J21=jdk-21
 J24=jdk-24
 JM=jdk-mainline
 JL=jdk-leyden
+#JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
 
 # Pull the binaries if not present
 if [ ! -d $J17 ]; then
@@ -71,7 +71,6 @@ run_with() {
 	$J17/bin/jar cf hellostream.jar *.class
 	OPTS="$OPTS -cp hellostream.jar"
 	APP="HelloStream"
-#	APP="HelloStream.java"
 
 	# Go!
 	lscpu | grep "Model name"
@@ -121,11 +120,6 @@ run_with() {
 
 	echo "LEYDEN, AOT CACHE ENABLED"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $LEYDEN_OPTS $APP"
-
-	echo "LEYDEN, CACHE DATA STORE ENABLED"
- 	rm -f app.cds*
-	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:CacheDataStore=app.cds $LEYDEN_OPTS $APP"
-
 }
 
 run_with "-XX:+UseSerialGC"					| tee results-serial.txt
