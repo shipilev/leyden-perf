@@ -16,7 +16,7 @@ rm -f *.class *.$OUT/jar
 $J17/bin/javac JavacBenchApp.java
 $J17/bin/jar cf JavacBenchApp.jar *.class
 
-TI=500
+TI=1000
 RI=500
 
 SHOW_ITERS=50
