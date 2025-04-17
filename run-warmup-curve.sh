@@ -4,6 +4,7 @@
 
 JM=~/trunks/jdk/build/baseline-pp/
 JP=~/trunks/jdk/build/proto-pp/
+#JP=~/trunks/jdk/build/linux-x86_64-server-release/images/jdk/
 
 OUT=results/warmup-curve/
 
@@ -16,7 +17,7 @@ rm -f *.class *.$OUT/jar
 $J17/bin/javac JavacBenchApp.java
 $J17/bin/jar cf JavacBenchApp.jar *.class
 
-TI=1000
+TI=50
 RI=500
 
 SHOW_ITERS=50
@@ -26,31 +27,31 @@ OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -cp JavacBench
 if [ "x" == "x${GRAPH_ONLY}" ]; then
 	rm $OUT/*.ssv
 
+	rm -f *.aot *.aotconf
 	for C in $CORE_LIST; do
-		NODES=0-$C
+		taskset -c 0-$C $JM/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/mainline-$C.ssv
+	done
 
-		rm -f *.aot *.aotconf
-		taskset -c $NODES $JM/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/mainline-$C.ssv
+	rm -f *.aot *.aotconf
+	$JM/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
+	$JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
+	for C in $CORE_LIST; do
+		taskset -c 0-$C $JM/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/mainline-aot-$C.ssv
+	done
 
-		rm -f *.aot *.aotconf
-		$JM/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
-		$JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
-		taskset -c $NODES $JM/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/mainline-aot-$C.ssv
+	rm -f *.aot *.aotconf
+	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
+	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
+	for C in $CORE_LIST; do
+		taskset -c 0-$C $JL/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/premain-$C.ssv
+	done
 
-		rm -f *.aot *.aotconf
-		$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
-		$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
-		taskset -c $NODES $JL/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/premain-$C.ssv
-
-		rm -f *.aot *.aotconf
-		$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
-		$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
-		taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/pp-$C.ssv
-
-		rm -f *.aot *.aotconf
-		$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
-		$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
-		taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode $OPTS $RI >> $OUT/pp-new-$C.ssv
+	rm -f *.aot *.aotconf
+	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
+	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
+	for C in $CORE_LIST; do
+		taskset -c 0-$C $JP/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/pp-$C.ssv
+		taskset -c 0-$C $JP/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode $OPTS $RI >> $OUT/pp-new-$C.ssv
 	done
 fi
 
@@ -111,7 +112,6 @@ plot "$OUT/mainline-$C.ssv" using 1:2 lw 5 with lines title 'Mainline', \
      "$OUT/premain-$C.ssv" using 1:2 lw 5 with lines title 'Premain AOT', \
      "$OUT/pp-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof', \
      "$OUT/pp-new-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof (No Comp)'
-
 
 set title "Trained $TI Iterations; All Iterations Shown, Integrated; CPUs: $(( $C + 1 ))"
 unset xrange
