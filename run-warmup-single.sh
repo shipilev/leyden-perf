@@ -16,16 +16,16 @@ rm -f *.class *.$OUT/jar
 $J17/bin/javac JavacBenchApp.java
 $J17/bin/jar cf JavacBenchApp.jar *.class
 
-TI=1000
+TI=200
 RI=1000
 
 SHOW_ITERS=50
 
 #OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:-Inline -XX:-TieredCompilation -cp JavacBenchApp.jar JavacBenchApp"
-OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -cp JavacBenchApp.jar JavacBenchApp"
+OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:-TieredCompilation -cp JavacBenchApp.jar JavacBenchApp"
 PP_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+AbortVMOnCompilationFailure -XX:-UseNewCode $OPTS"
 PP2_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+AbortVMOnCompilationFailure -XX:+UseNewCode -XX:+UseNewCode2 $OPTS"
-PP3_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+AbortVMOnCompilationFailure -XX:+UseNewCode -XX:-ReplayTraining $OPTS"
+PP3_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+AbortVMOnCompilationFailure -XX:+UseNewCode -XX:-AOTReplayTraining $OPTS"
 
 
 C=15
@@ -45,7 +45,8 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
 	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $PP2_OPTS $RI >> $OUT/pp-nocomp-$C.ssv
 	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $PP3_OPTS $RI >> $OUT/pp-noreplay-$C.ssv
 
-#	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode -XX:+UseNewCode2 -XX:+PrintTieredEvents $OPTS $RI
+	#taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+PrintTieredEvents $PP_OPTS $RI 2>&1 | grep "java.util.regex.Pattern\$Slice.match" | tee out
+#	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+PrintTieredEvents $PP_OPTS $RI 2>&1 | tee out
 fi
 
 rm plot.gnu
