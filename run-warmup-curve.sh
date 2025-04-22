@@ -29,7 +29,7 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
 
 	rm -f *.aot *.aotconf
 	for C in $CORE_LIST; do
-		taskset -c 0-$C $JM/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/mainline-$C.ssv
+		taskset -c 0-$C $JM/bin/java $OPTS $RI >> $OUT/mainline-$C.ssv
 	done
 
 	rm -f *.aot *.aotconf
