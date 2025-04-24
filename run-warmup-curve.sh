@@ -3,8 +3,8 @@
 . setup.sh
 
 JM=~/trunks/jdk/build/baseline-pp/
-#JP=~/trunks/jdk/build/proto-pp/
-JP=~/trunks/jdk/build/linux-x86_64-server-release/images/jdk/
+JP=~/trunks/jdk/build/proto-pp/
+#JP=~/trunks/jdk/build/linux-x86_64-server-release/images/jdk/
 
 OUT=results/warmup-curve/
 
@@ -17,12 +17,18 @@ rm -f *.class *.$OUT/jar
 $J17/bin/javac JavacBenchApp.java
 $J17/bin/jar cf JavacBenchApp.jar *.class
 
-TI=500
+TI=$1
+
+if [ "x" == "x${TI}" ]; then
+  TI=100
+fi
+
 RI=500
 
 SHOW_ITERS=50
 
-OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:-TieredCompilation -cp JavacBenchApp.jar JavacBenchApp"
+#OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:-TieredCompilation -cp JavacBenchApp.jar JavacBenchApp"
+OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -cp JavacBenchApp.jar JavacBenchApp"
 
 if [ "x" == "x${GRAPH_ONLY}" ]; then
 	rm $OUT/*.ssv
@@ -51,103 +57,49 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
 	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
 	for C in $CORE_LIST; do
 		taskset -c 0-$C $JP/bin/java -XX:AOTCache=app.aot $OPTS $RI >> $OUT/pp-$C.ssv
-		taskset -c 0-$C $JP/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode -XX:+UseNewCode2 $OPTS $RI >> $OUT/pp-new-$C.ssv
+		taskset -c 0-$C $JP/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+UseNewCode $OPTS $RI >> $OUT/pp-nocomp-$C.ssv
 	done
 fi
 
 rm plot.gnu
 cat <<EOF > plot.gnu
-set terminal png size 3200, 3200
+set terminal png size 1600, 3200
 set output "$OUT/plot-t${TI}.png"
 
-set multiplot layout 6,6
-
-#set log y
-
-set xlabel "iteration"
+set multiplot layout 6,2
 
 set key vert
-set key top left
 set key box
 
 #set ytics 100
 #set xtics 200000
 set grid xtics ytics mytics mxtics
-
 EOF
 
 
 for C in $CORE_LIST; do
 
 cat <<EOF >> plot.gnu
-set title "Trained $TI Iterations; First $SHOW_ITERS Iterations Shown; CPUs: $(( $C + 1 ))"
-
-#set arrow from $TI, graph 0 to $TI, graph 1 nohead lc rgb 'red' lw 5
-
-set xlabel "iteration"
-set ylabel "time per iteration, ms"
+set xlabel "run time, ms"
+set ylabel "time per class, ms"
 set key top right
 
-set yrange [5:80]
-set xrange [-2:$SHOW_ITERS]
-plot "$OUT/mainline-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Mainline', \
-     "$OUT/mainline-aot-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Mainline AOT', \
-     "$OUT/premain-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Premain AOT', \
-     "$OUT/pp-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Pers Prof (No Comp)'
-
-set title "Trained $TI Iterations; All Iterations Shown; CPUs: $(( $C + 1 ))"
-unset xrange
-plot "$OUT/mainline-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Mainline', \
-     "$OUT/mainline-aot-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Mainline AOT', \
-     "$OUT/premain-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Premain AOT', \
-     "$OUT/pp-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 1:(\$3/1000) lw 5 with lines title 'Pers Prof (No Comp)'
-
-set xlabel "iteration"
-set ylabel "cumulative time, ms"
-set key bottom right
-
-set title "Trained $TI Iterations; First $SHOW_ITERS Iterations Shown, Integrated; CPUs: $(( $C + 1 ))"
-set xrange [-2:$SHOW_ITERS]
-unset yrange
-plot "$OUT/mainline-$C.ssv" using 1:2 lw 5 with lines title 'Mainline', \
-     "$OUT/mainline-aot-$C.ssv" using 1:2 lw 5 with lines title 'Mainline AOT', \
-     "$OUT/premain-$C.ssv" using 1:2 lw 5 with lines title 'Premain AOT', \
-     "$OUT/pp-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof (No Comp)'
-
-set title "Trained $TI Iterations; All Iterations Shown, Integrated; CPUs: $(( $C + 1 ))"
-unset xrange
-unset yrange
-plot "$OUT/mainline-$C.ssv" using 1:2 lw 5 with lines title 'Mainline', \
-     "$OUT/mainline-aot-$C.ssv" using 1:2 lw 5 with lines title 'Mainline AOT', \
-     "$OUT/premain-$C.ssv" using 1:2 lw 5 with lines title 'Premain AOT', \
-     "$OUT/pp-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 1:2 lw 5 with lines title 'Pers Prof (No Comp)'
-
-set xlabel "cumulative time, ms"
-set ylabel "time per iteration, ms"
-set key top right
-
-set title "Trained $TI Iterations; First $SHOW_ITERS Iterations Shown, Integrated; CPUs: $(( $C + 1 ))"
+set title "Trained $TI Classes; First $SHOW_ITERS Classes Shown; $(( $C + 1 )) CPUs available"
 set xrange [-2:2000]
+set yrange [0:*]
 unset yrange
 plot "$OUT/mainline-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Mainline', \
      "$OUT/mainline-aot-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Mainline AOT', \
      "$OUT/premain-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Premain AOT', \
      "$OUT/pp-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Pers Prof (No Comp)'
+     "$OUT/pp-nocomp-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Pers Prof (No Comp)'
 
-set title "Trained $TI Iterations; All Iterations Shown, Integrated; CPUs: $(( $C + 1 ))"
+set title "Trained $TI Classes; All Data Shown; $(( $C + 1 )) CPUs available"
 unset xrange
-unset yrange
-plot "$OUT/mainline-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Mainline', \
-     "$OUT/mainline-aot-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Mainline AOT', \
-     "$OUT/premain-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Premain AOT', \
-     "$OUT/pp-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Pers Prof', \
-     "$OUT/pp-new-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Pers Prof (No Comp)'
-
+set yrange [5:*]
+set log y
+replot
+unset log y
 EOF
 done
 
