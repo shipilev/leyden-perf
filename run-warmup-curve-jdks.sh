@@ -8,7 +8,7 @@ JP=~/trunks/jdk/build/proto-pp/
 
 OUT=results/warmup-curve-jdks/
 
-C=3
+C=15
 
 mkdir -p $OUT
 
@@ -83,7 +83,7 @@ fi
 
 rm plot.gnu
 cat <<EOF > plot.gnu
-set terminal png size 1500, 1500
+set terminal png size 1600, 1600
 set output "$OUT/plot-t${TI}.png"
 
 set multiplot layout 3,2
@@ -116,7 +116,7 @@ plot "$OUT/jdk17-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 17', \
      "$OUT/jdk26-aot-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 26? (Leyden 3/3: + AOT compiled code)'
 
 unset xrange
-set yrange [8:300]
+set yrange [7:300]
 set log y
 replot
 set xrange [0:2000]
@@ -131,7 +131,7 @@ plot "$OUT/jdk17-c1-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 17', \
      "$OUT/jdk26-aot-c1-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 26? (Leyden 3/3: + AOT compiled code)'
 
 unset xrange
-set yrange [8:300]
+set yrange [7:300]
 set log y
 replot
 set xrange [0:2000]
@@ -146,7 +146,7 @@ plot "$OUT/jdk17-c2-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 17', \
      "$OUT/jdk26-aot-c2-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'JDK 26? (Leyden 3/3: + AOT compiled code)'
 
 unset xrange
-set yrange [8:300]
+set yrange [7:300]
 set log y
 replot
 set xrange [0:2000]
