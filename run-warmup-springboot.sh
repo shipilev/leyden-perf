@@ -21,6 +21,10 @@ P_OPTS="$OPTS"
 
 #P_OPTS="$OPTS -XX:+PreloadOnly"
 
+SLEEP=30
+
+ITERS=100
+RATE=600
 
 if [ "x" == "x${GRAPH_ONLY}" ]; then
 	rm $OUT/*.ssv
@@ -28,16 +32,16 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
 
 	taskset -c $NODES $JP/bin/java $P_OPTS &
         PID=$!
-	sleep 20
-        for I in `seq 1 20`; do wrk2 -R 400 -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/mainline.log
+	sleep $SLEEP
+        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/mainline.log
         kill $PID
         wait $PID
 
 
 	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $T_OPTS &
         PID=$!
-	sleep 20
-        for I in `seq 1 20`; do wrk2 -R 200 -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl
+	sleep $SLEEP
+        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl
         kill $PID
         wait $PID
 
@@ -45,18 +49,17 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
 
 	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS &
         PID=$!
-        sleep 20
-        for I in `seq 1 20`; do wrk2 -R 400 -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden.log
+        sleep $SLEEP
+        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden.log
         kill $PID
         wait $PID
 
-	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS -XX:-AOTCompileEagerly &
-        PID=$!
-        sleep 20
-        for I in `seq 1 20`; do wrk2 -R 400 -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden-nocomp.log
-        kill $PID
-        wait $PID
-
+#	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS -XX:-AOTCompileEagerly &
+#        PID=$!
+#       sleep $SLEEP
+#        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden-nocomp.log
+#        kill $PID
+#        wait $PID
 
 #	rm -f *.aot *.aotconf
 #	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
