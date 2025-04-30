@@ -50,6 +50,14 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
         kill $PID
         wait $PID
 
+	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS -XX:-AOTCompileEagerly &
+        PID=$!
+        sleep 20
+        for I in `seq 1 20`; do wrk2 -R 400 -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden-nocomp.log
+        kill $PID
+        wait $PID
+
+
 #	rm -f *.aot *.aotconf
 #	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
 #	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
