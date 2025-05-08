@@ -3,6 +3,8 @@
 # CPU config
 sudo cpupower frequency-set -g performance
 
+J8=jdk-8
+J11=jdk-11
 J17=jdk-17
 J21=jdk-21
 J24=jdk-24
@@ -11,6 +13,16 @@ JL=jdk-leyden
 #JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
 
 # Pull the binaries if not present
+if [ ! -d $J8 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk8-dev/openjdk-jdk8-dev-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J8/
+fi
+
+if [ ! -d $J11 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk11-dev/openjdk-jdk11-dev-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J11/
+fi
+
 if [ ! -d $J17 ]; then
   curl https://builds.shipilev.net/openjdk-jdk17-dev/openjdk-jdk17-dev-linux-x86_64-server.tar.xz | tar xJf -
   mv jdk/ $J17/
@@ -43,8 +55,8 @@ import java.util.stream.*;
 
 public class HelloStream {
     public static void main(String ... args) {
-        var words = List.of("hello", "fuzzy", "world");
-        var greeting = words.stream()
+        List<String> words = Arrays.asList("hello", "fuzzy", "world");
+        String greeting = words.stream()
             .filter(w -> !w.contains("z"))
             .collect(Collectors.joining(", "));
         System.out.println(greeting);  // hello, world
@@ -52,3 +64,10 @@ public class HelloStream {
 }
 EOF
 
+rm -f *.class *.jar
+$J8/bin/javac HelloStream.java
+$J8/bin/jar cf hellostream.jar *.class
+
+rm -f *.class
+$J17/bin/javac JavacBenchApp.java
+$J17/bin/jar cf JavacBenchApp.jar *.class
