@@ -12,7 +12,7 @@ mkdir -p $OUT
 #OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:SelfExitTimer=0.3 -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar -XX:GuaranteedSafepointInterval=1000"
 OPTS="-XX:+UseSerialGC -Xms1g -Xmx1g -XX:+AlwaysPreTouch -Dspring.context.exit=onRefresh -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar"
 
-C=0
+C=15
 NODES=0-$C
 
 #OPTS="$OPTS -XX:-TieredCompilation"
@@ -23,48 +23,38 @@ P_OPTS="$OPTS"
 
 SLEEP=30
 
-ITERS=100
+T_ITERS=100
+P_ITERS=20
 RATE=600
 
 if [ "x" == "x${GRAPH_ONLY}" ]; then
 	rm $OUT/*.ssv
 	rm -f *.aot *.aotconf
 
-	taskset -c $NODES $JP/bin/java $P_OPTS &
+	taskset -c $NODES $JP/bin/java -XX:TieredStopAtLevel=1 -XX:+PrintCompilation $P_OPTS &
         PID=$!
 	sleep $SLEEP
-        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/mainline.log
+        for I in `seq 1 $P_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/mainline.log
         kill $PID
         wait $PID
 
+exit
 
 	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $T_OPTS &
         PID=$!
 	sleep $SLEEP
-        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl
+        for I in `seq 1 $T_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl
         kill $PID
         wait $PID
 
 	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $T_OPTS
 
-	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS &
+	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+PrintCompilation $P_OPTS | tee compilation.log &
         PID=$!
         sleep $SLEEP
-        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden.log
+        for I in `seq 1 $P_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden.log
         kill $PID
         wait $PID
-
-#	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $P_OPTS -XX:-AOTCompileEagerly &
-#        PID=$!
-#       sleep $SLEEP
-#        for I in `seq 1 $ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden-nocomp.log
-#        kill $PID
-#        wait $PID
-
-#	rm -f *.aot *.aotconf
-#	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $TI
-#	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $OPTS $TI
-#	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot $PP_OPTS $RI >> $OUT/fix-$C.ssv
 fi
 
 exit
