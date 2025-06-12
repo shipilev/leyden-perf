@@ -2,17 +2,15 @@
 
 . setup.sh
 
-#JP=~/trunks/shipilev-leyden/build/linux-x86_64-server-fastdebug/images/jdk/
-JP=~/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
-
 OUT=results/warmup-springboot/
 
 mkdir -p $OUT
 
 #OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -XX:SelfExitTimer=0.3 -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar -XX:GuaranteedSafepointInterval=1000"
-OPTS="-XX:+UseSerialGC -Xms1g -Xmx1g -XX:+AlwaysPreTouch -Dspring.context.exit=onRefresh -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar"
+OPTS="-XX:+UseParallelGC -Xmn7g -Xms8g -Xmx8g -XX:+AlwaysPreTouch -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar"
+#OPTS="-XX:+UseSerialGC -Xms1g -Xmx1g -XX:+AlwaysPreTouch -Dspring.context.exit=onRefresh -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions -jar ../spring-petclinic/target/spring-petclinic-2.1.0.BUILD-SNAPSHOT.jar"
 
-C=15
+C=3
 NODES=0-$C
 
 #OPTS="$OPTS -XX:-TieredCompilation"
@@ -21,55 +19,104 @@ P_OPTS="$OPTS"
 
 #P_OPTS="$OPTS -XX:+PreloadOnly"
 
-SLEEP=30
+SLEEP=10
 
-T_ITERS=100
-P_ITERS=20
-RATE=600
+T_REQ=100000
+P_REQ=10000
+
+CONC=1
+
+URL=http://localhost:8080/vets.html
 
 if [ "x" == "x${GRAPH_ONLY}" ]; then
 	rm $OUT/*.ssv
+
+	# -- JDK 17
+
+	taskset -c $NODES $J17/bin/java $P_OPTS &
+        PID=$!
+	sleep $SLEEP
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk17.log
+        kill $PID
+        wait $PID
+
+	# -- JDK 21
+
+	taskset -c $NODES $J21/bin/java $P_OPTS &
+        PID=$!
+	sleep $SLEEP
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk21.log
+        kill $PID
+        wait $PID
+
+	# -- JDK 25
+
+	taskset -c $NODES $J25/bin/java $P_OPTS &
+        PID=$!
+	sleep $SLEEP
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk25.log
+        kill $PID
+        wait $PID
+
+	# -- JDK 25 AOT
 	rm -f *.aot *.aotconf
 
-	taskset -c $NODES $JP/bin/java -XX:TieredStopAtLevel=1 -XX:+PrintCompilation $P_OPTS &
+	$J25/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $T_OPTS &
         PID=$!
 	sleep $SLEEP
-        for I in `seq 1 $P_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/mainline.log
+	hey -c $CONC -n $T_REQ $URL
         kill $PID
         wait $PID
 
-exit
+	$J25/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $T_OPTS
 
-	$JP/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $T_OPTS &
-        PID=$!
-	sleep $SLEEP
-        for I in `seq 1 $T_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl
-        kill $PID
-        wait $PID
-
-	$JP/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $T_OPTS
-
-	taskset -c $NODES $JP/bin/java -XX:AOTCache=app.aot -XX:+PrintCompilation $P_OPTS | tee compilation.log &
+	taskset -c $NODES $J25/bin/java -XX:AOTCache=app.aot $P_OPTS &
         PID=$!
         sleep $SLEEP
-        for I in `seq 1 $P_ITERS`; do wrk2 -R $RATE -d 1 http://127.0.0.1:8080/ 2>&1 | grep Latency; done | nl 2>&1 | tee $OUT/leyden.log
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk25-aot.log
         kill $PID
         wait $PID
+
+	taskset -c $NODES $J25/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+AOTCompileEagerly $P_OPTS &
+        PID=$!
+        sleep $SLEEP
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk25-aot-eager.log
+        kill $PID
+        wait $PID
+
+	# --- Leyden
+	rm -f *.aot *.aotconf
+
+	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $T_OPTS &
+        PID=$!
+	sleep $SLEEP
+	hey -c $CONC -n $T_REQ $URL
+        kill $PID
+        wait $PID
+
+	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf -XX:AOTCache=app.aot $T_OPTS
+
+	taskset -c $NODES $JL/bin/java -XX:AOTCache=app.aot $P_OPTS &
+        PID=$!
+        sleep $SLEEP
+	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/premain.log
+        kill $PID
+        wait $PID
+
 fi
 
-exit
-
 rm plot.gnu
+
 cat <<EOF > plot.gnu
-set terminal png size 1600, 800
+set terminal png size 3200, 800
 set output "$OUT/plot-t${TI}.png"
+set datafile separator comma
+set multiplot layout 1,4
 
-set multiplot layout 1,2
+set log y
 
-#set log y
-
-set ylabel "time per class, ms"
-set xlabel "run time, ms"
+set ylabel "response time, ms"
+set xlabel "run time, sec"
 
 set key vert
 set key top left
@@ -79,23 +126,29 @@ set key box
 #set xtics 200000
 set grid xtics ytics mytics mxtics
 
-EOF
-
-
-cat <<EOF >> plot.gnu
-set title "Trained $TI Classes; First $SHOW_ITERS Shown; $(( $C + 1 )) CPUs Available"
-
-#set arrow from $TI, graph 0 to $TI, graph 1 nohead lc rgb 'red' lw 5
-
 set key top right
-set yrange [5:50]
-set xrange [-2:$SHOW_ITERS]
-plot "$OUT/premain-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Current premain', \
-     "$OUT/fix-$C.ssv" using 2:(\$3/1000) lw 5 with lines title 'Fixed', \
-
-set title "Trained $TI Classes; All Shown; $(( $C + 1 )) CPUs Available"
+#set yrange [5:50]
 unset xrange
+
+set title "Spring Boot Petclinic; Trained $T_REQ Requests; $(( $C + 1 )) CPUs available"
+
+plot "$OUT/jdk17.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 17', \
+     "$OUT/jdk21.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 21', \
+     "$OUT/jdk25.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25', \
+     "$OUT/jdk25-aot.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25 (AOT)', \
+     "$OUT/jdk25-aot-eager.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25 (AOT + eager compile)', \
+     "$OUT/premain.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'Leyden/premain'
+
+set xrange [0:10]
 replot
+
+set xrange [0:5]
+replot
+
+set xrange [0:2]
+replot
+
+
 EOF
 
 gnuplot plot.gnu

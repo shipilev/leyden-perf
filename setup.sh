@@ -8,6 +8,7 @@ J11=jdk-11
 J17=jdk-17
 J21=jdk-21
 J24=jdk-24
+J25=jdk-25
 JM=jdk-mainline
 JL=jdk-leyden
 #JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
@@ -38,6 +39,11 @@ if [ ! -d $J24 ]; then
   mv jdk/ $J24/
 fi
 
+if [ ! -d $J25 ]; then
+  curl https://builds.shipilev.net/openjdk-jdk25/openjdk-jdk25-linux-x86_64-server.tar.xz | tar xJf -
+  mv jdk/ $J25/
+fi
+
 if [ ! -d $JM ]; then
   curl https://builds.shipilev.net/openjdk-jdk/openjdk-jdk-linux-x86_64-server.tar.xz | tar xJf -
   mv jdk/ $JM/
@@ -55,11 +61,16 @@ import java.util.stream.*;
 
 public class HelloStream {
     public static void main(String ... args) {
+//        int iters = (args.length > 0) ? 1_000_000 : 1;
+//        for (int i = 0; i < iters; i++) doOne();
+//    }
+//
+//    public static void doOne() {
         List<String> words = Arrays.asList("hello", "fuzzy", "world");
         String greeting = words.stream()
             .filter(w -> !w.contains("z"))
             .collect(Collectors.joining(", "));
-        System.out.println(greeting);  // hello, world
+        System.out.println(greeting + "!");  // hello, world
     }
 }
 EOF
