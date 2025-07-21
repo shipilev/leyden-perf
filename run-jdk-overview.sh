@@ -22,8 +22,8 @@ run_with() {
 	LEYDEN_OPTS="$OPTS"
 
 	rm -f *.aot *.aotconf *.class *.jar
-	$J8/bin/javac HelloStream.java
-	$J8/bin/jar cf hellostream.jar *.class
+	$J11/bin/javac HelloStream.java
+	$J11/bin/jar cf hellostream.jar *.class
 	OPTS="$OPTS -cp hellostream.jar"
 	APP="HelloStream"
 
@@ -43,18 +43,18 @@ run_with() {
 	echo "JDK 21"
 	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS $APP"
 
-#	echo "JDK 24"
-#	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java $OPTS $APP"
+	echo "JDK 24"
+	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java $OPTS $APP"
 
 	# Build AOT
-#        echo "Generating AOT..."
-#	rm -f *.aot *.aotconf
-#	$J24/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-#	$J24/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
-#        echo
+        echo "Generating AOT..."
+	rm -f *.aot *.aotconf
+	$J24/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	$J24/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+        echo
 
-#	echo "JDK 24, AOT CACHE ENABLED"
-#	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java -XX:AOTCache=app.aot $OPTS $APP"
+	echo "JDK 24, AOT CACHE ENABLED"
+	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
 	echo "JDK MAINLINE (JDK 25+)"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
@@ -69,18 +69,18 @@ run_with() {
 	echo "JDK MAINLINE (JDK 25+), AOT CACHE ENABLED"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-#	echo "LEYDEN"
-#	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
+	echo "LEYDEN"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
-#       echo "Generating AOT..."
-#	rm -f *.aot *.aotconf
-#	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS $APP
-#	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS -XX:AOTCache=app.aot
-#       echo
+        echo "Generating AOT..."
+	rm -f *.aot *.aotconf
+	$JL/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS $APP
+	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS -XX:AOTCache=app.aot
+        echo
 
-#	echo "LEYDEN, AOT CACHE ENABLED"
-#	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $LEYDEN_OPTS $APP"
+	echo "LEYDEN, AOT CACHE ENABLED"
+	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $LEYDEN_OPTS $APP"
 }
 
 run_with "-XX:+UseSerialGC"					| tee $OUT/results-serial.txt

@@ -1,36 +1,64 @@
 JDK 8
 Benchmark 1: jdk-8/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      86.1 ms ±   1.7 ms    [User: 97.4 ms, System: 18.2 ms]
-  Range (min … max):    75.8 ms …  87.5 ms    100 runs
- 
 JDK 11
 Benchmark 1: jdk-11/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      40.6 ms ±   0.3 ms    [User: 47.1 ms, System: 13.3 ms]
-  Range (min … max):    40.2 ms …  41.6 ms    100 runs
+  Time (mean ± σ):      41.5 ms ±   4.7 ms    [User: 49.8 ms, System: 11.4 ms]
+  Range (min … max):    37.3 ms …  49.3 ms    100 runs
  
 JDK 17
 Benchmark 1: jdk-17/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      40.9 ms ±   0.3 ms    [User: 37.0 ms, System: 16.6 ms]
-  Range (min … max):    39.9 ms …  41.8 ms    100 runs
+  Time (mean ± σ):      31.8 ms ±   0.4 ms    [User: 29.0 ms, System: 12.2 ms]
+  Range (min … max):    30.4 ms …  33.2 ms    100 runs
  
 JDK 21
 Benchmark 1: jdk-21/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      35.5 ms ±   0.4 ms    [User: 24.6 ms, System: 16.7 ms]
-  Range (min … max):    34.7 ms …  36.3 ms    100 runs
+  Time (mean ± σ):      27.6 ms ±   0.7 ms    [User: 20.6 ms, System: 11.9 ms]
+  Range (min … max):    26.5 ms …  30.8 ms    100 runs
+ 
+JDK 24
+Benchmark 1: jdk-24/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
+  Time (mean ± σ):      25.8 ms ±   0.6 ms    [User: 20.4 ms, System: 13.1 ms]
+  Range (min … max):    24.8 ms …  28.5 ms    100 runs
+ 
+Generating AOT...
+hello, world!
+AOTCache creation is complete: app.aot
+
+JDK 24, AOT CACHE ENABLED
+Benchmark 1: jdk-24/bin/java -XX:AOTCache=app.aot -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
+  Time (mean ± σ):      15.7 ms ±   0.2 ms    [User: 9.2 ms, System: 10.2 ms]
+  Range (min … max):    15.2 ms …  16.5 ms    100 runs
  
 JDK MAINLINE (JDK 25+)
 Benchmark 1: jdk-mainline/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      29.9 ms ±   0.2 ms    [User: 23.7 ms, System: 16.5 ms]
-  Range (min … max):    29.4 ms …  30.5 ms    100 runs
+  Time (mean ± σ):      23.4 ms ±   0.5 ms    [User: 19.0 ms, System: 13.2 ms]
+  Range (min … max):    22.5 ms …  26.0 ms    100 runs
  
 Generating AOT...
-hello, world
-AOTConfiguration recorded: app.aotconf
+hello, world!
+ AOTConfiguration recorded: app.aotconf
 Reading AOTConfiguration app.aotconf and writing AOTCache app.aot
-AOTCache creation is complete: app.aot 9932800 bytes
+AOTCache creation is complete: app.aot 10428416 bytes
 
 JDK MAINLINE (JDK 25+), AOT CACHE ENABLED
 Benchmark 1: jdk-mainline/bin/java -XX:AOTCache=app.aot -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      17.7 ms ±   0.2 ms    [User: 11.1 ms, System: 12.7 ms]
-  Range (min … max):    17.4 ms …  18.1 ms    100 runs
+  Time (mean ± σ):      14.9 ms ±   0.3 ms    [User: 9.6 ms, System: 10.7 ms]
+  Range (min … max):    14.2 ms …  15.4 ms    100 runs
+ 
+LEYDEN
+Benchmark 1: jdk-leyden/bin/java -XX:+UseSerialGC -Xmx256m -cp hellostream.jar HelloStream
+  Time (mean ± σ):      24.4 ms ±   0.5 ms    [User: 19.9 ms, System: 13.2 ms]
+  Range (min … max):    23.6 ms …  27.3 ms    100 runs
+ 
+Generating AOT...
+hello, world!
+[0.113s][warning][aot] Skipping HelloStream: Unsupported location
+ AOTConfiguration recorded: app.aotconf
+Reading AOTConfiguration app.aotconf and writing AOTCache app.aot
+AOTCache creation is complete: app.aot 9879552 bytes
+
+LEYDEN, AOT CACHE ENABLED
+Benchmark 1: jdk-leyden/bin/java -XX:AOTCache=app.aot -XX:+UseSerialGC -Xmx256m HelloStream
+  Time (mean ± σ):      16.8 ms ±   0.3 ms    [User: 14.5 ms, System: 11.2 ms]
+  Range (min … max):    16.2 ms …  17.9 ms    100 runs
  
