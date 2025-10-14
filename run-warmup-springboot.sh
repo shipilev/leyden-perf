@@ -77,13 +77,6 @@ if [ "x" == "x${GRAPH_ONLY}" ]; then
         kill $PID
         wait $PID
 
-	taskset -c $NODES $J25/bin/java -XX:AOTCache=app.aot -XX:+UnlockDiagnosticVMOptions -XX:+AOTCompileEagerly $P_OPTS &
-        PID=$!
-        sleep $SLEEP
-	hey -o csv -c $CONC -n $P_REQ $URL > $OUT/jdk25-aot-eager.log
-        kill $PID
-        wait $PID
-
 	# --- Leyden
 	rm -f *.aot *.aotconf
 
@@ -136,7 +129,6 @@ plot "$OUT/jdk17.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 17',
      "$OUT/jdk21.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 21', \
      "$OUT/jdk25.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25', \
      "$OUT/jdk25-aot.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25 (AOT)', \
-     "$OUT/jdk25-aot-eager.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'JDK 25 (AOT + eager compile)', \
      "$OUT/premain.log" using (\$8+\$1):(\$1*1000) lw 5 with lines title 'Leyden/premain'
 
 set xrange [0:10]

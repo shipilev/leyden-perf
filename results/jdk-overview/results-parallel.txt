@@ -1,9 +1,0 @@
-JDK 8
-Benchmark 1: jdk-8/bin/java -XX:+UseParallelGC -Xmx256m -cp hellostream.jar HelloStream
-JDK 11
-Benchmark 1: jdk-11/bin/java -XX:+UseParallelGC -Xmx256m -cp hellostream.jar HelloStream
-  Time (mean ± σ):      41.2 ms ±   4.0 ms    [User: 50.2 ms, System: 11.8 ms]
-  Range (min … max):    38.5 ms …  49.9 ms    100 runs
- 
-JDK 17
-Benchmark 1: jdk-17/bin/java -XX:+UseParallelGC -Xmx256m -cp hellostream.jar HelloStream

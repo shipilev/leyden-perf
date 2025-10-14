@@ -7,11 +7,10 @@ J8=jdk-8
 J11=jdk-11
 J17=jdk-17
 J21=jdk-21
-J24=jdk-24
 J25=jdk-25
 JM=jdk-mainline
 JL=jdk-leyden
-#JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
+JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
 
 # Pull the binaries if not present
 if [ ! -d $J8 ]; then
@@ -32,11 +31,6 @@ fi
 if [ ! -d $J21 ]; then
   curl https://builds.shipilev.net/openjdk-jdk21-dev/openjdk-jdk21-dev-linux-x86_64-server.tar.xz | tar xJf -
   mv jdk/ $J21/
-fi
-
-if [ ! -d $J24 ]; then
-  curl https://builds.shipilev.net/openjdk-jdk24/openjdk-jdk24-linux-x86_64-server.tar.xz | tar xJf -
-  mv jdk/ $J24/
 fi
 
 if [ ! -d $J25 ]; then
@@ -75,9 +69,19 @@ public class HelloStream {
 }
 EOF
 
+cat > Hello.java <<EOF
+public class Hello {
+    public static void main(String ... args) {
+        System.out.println("Hello World!");
+    }
+}
+EOF
+
+
 rm -f *.class *.jar
 $J8/bin/javac HelloStream.java
-$J8/bin/jar cf hellostream.jar *.class
+$J8/bin/javac Hello.java
+$J8/bin/jar cf hello.jar *.class
 
 rm -f *.class
 $J17/bin/javac JavacBenchApp.java

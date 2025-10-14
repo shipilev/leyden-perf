@@ -17,15 +17,15 @@ run_with() {
 
 	# Work around JDK-8348278: Trim InitialRAMPercentage to improve startup in default modes
 	#OPTS="$OPTS -Xms64m -Xmx512m"
-	OPTS="$OPTS -Xmx256m"
+	#OPTS="$OPTS -Xmx512m"
+
+
+	rm -f *.aot *.aotconf 
+	OPTS="$OPTS -cp hello.jar"
+	#APP="HelloStream"
+	APP="Hello"
 
 	LEYDEN_OPTS="$OPTS"
-
-	rm -f *.aot *.aotconf *.class *.jar
-	$J11/bin/javac HelloStream.java
-	$J11/bin/jar cf hellostream.jar *.class
-	OPTS="$OPTS -cp hellostream.jar"
-	APP="HelloStream"
 
 	# Go!
 #	lscpu | grep "Model name"
@@ -43,20 +43,20 @@ run_with() {
 	echo "JDK 21"
 	taskset -c $NODES hyperfine $HF_OPTS "$J21/bin/java $OPTS $APP"
 
-	echo "JDK 24"
-	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java $OPTS $APP"
+	echo "JDK 25"
+	taskset -c $NODES hyperfine $HF_OPTS "$J25/bin/java $OPTS $APP"
 
 	# Build AOT
         echo "Generating AOT..."
 	rm -f *.aot *.aotconf
-	$J24/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
-	$J24/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
+	$J25/bin/java -XX:AOTMode=record -XX:AOTConfiguration=app.aotconf $OPTS $APP
+	$J25/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
         echo
 
-	echo "JDK 24, AOT CACHE ENABLED"
-	taskset -c $NODES hyperfine $HF_OPTS "$J24/bin/java -XX:AOTCache=app.aot $OPTS $APP"
+	echo "JDK 25, AOT CACHE ENABLED"
+	taskset -c $NODES hyperfine $HF_OPTS "$J25/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-	echo "JDK MAINLINE (JDK 25+)"
+	echo "JDK MAINLINE (JDK 26+)"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java $OPTS $APP"
 
 	# Build AOT
@@ -66,10 +66,10 @@ run_with() {
 	$JM/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $OPTS -XX:AOTCache=app.aot
         echo
 
-	echo "JDK MAINLINE (JDK 25+), AOT CACHE ENABLED"
+	echo "JDK MAINLINE (JDK 26+), AOT CACHE ENABLED"
 	taskset -c $NODES hyperfine $HF_OPTS "$JM/bin/java -XX:AOTCache=app.aot $OPTS $APP"
 
-	echo "LEYDEN"
+	echo "LEYDEN PREMAIN"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java $OPTS $APP"
 
 	# Build AOT
@@ -79,14 +79,15 @@ run_with() {
 	$JL/bin/java -XX:AOTMode=create -XX:AOTConfiguration=app.aotconf $LEYDEN_OPTS -XX:AOTCache=app.aot
         echo
 
-	echo "LEYDEN, AOT CACHE ENABLED"
+	echo "LEYDEN PREMAIN, AOT CACHE ENABLED"
 	taskset -c $NODES hyperfine $HF_OPTS "$JL/bin/java -XX:AOTCache=app.aot $LEYDEN_OPTS $APP"
 }
 
+#run_with ""		 				| tee $OUT/results.txt
 run_with "-XX:+UseSerialGC"					| tee $OUT/results-serial.txt
-run_with "-XX:+UseParallelGC"					| tee $OUT/results-parallel.txt
-run_with "-XX:+UseG1GC"		 				| tee $OUT/results-g1.txt
-run_with "-XX:+UseShenandoahGC"		 			| tee $OUT/results-shenandoah.txt
-run_with "-XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee $OUT/results-epsilon.txt
+#run_with "-XX:+UseParallelGC"					| tee $OUT/results-parallel.txt
+#run_with "-XX:+UseG1GC"		 				| tee $OUT/results-g1.txt
+#run_with "-XX:+UseShenandoahGC"		 			| tee $OUT/results-shenandoah.txt
+#run_with "-XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC"	| tee $OUT/results-epsilon.txt
 
 cd ..

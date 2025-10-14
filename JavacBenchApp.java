@@ -26,14 +26,11 @@ import java.lang.invoke.MethodHandles;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -96,15 +93,15 @@ public class JavacBenchApp {
         }
     }
 
-    public byte[] compile(SourceFile sf) {
+    public Map<String, byte[]> compile() {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> ds = new DiagnosticCollector<>();
-        Collection<SourceFile> sourceFiles = Collections.singletonList(sf);
+        Collection<SourceFile> sourceFiles = sources;
 
         try (FileManager fileManager = new FileManager(compiler.getStandardFileManager(ds, null, null))) {
             JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, sourceFiles);
             if (task.call()) {
-                return fileManager.getCompiledClasses().values().iterator().next();
+                return fileManager.getCompiledClasses();
             } else {
                 for (Diagnostic<? extends JavaFileObject> d : ds.getDiagnostics()) {
                     System.out.format("Line: %d, %s in %s", d.getLineNumber(), d.getMessage(null), d.getSource().getName());
@@ -116,6 +113,7 @@ public class JavacBenchApp {
         }
     }
 
+    List<SourceFile> sources;
 
     static final String imports = """
         import java.lang.*;
@@ -186,36 +184,44 @@ public class JavacBenchApp {
         }
         """;
 
-    Random r =  new Random();
-
-    List<SourceFile> sources;
-
     void setup(int count) {
         sources = new ArrayList<>(count);
-        int base = r.nextInt(1024*1024) ;
         for (int i = 0; i < count; i++) {
-            int idx = base + i;
-            String source = imports + "public class Test" + idx + " {" + testClassBody + "}";
-            sources.add(new SourceFile("Test" + idx, source));
+            String source = imports + "public class Test" + i + " {" + testClassBody + "}";
+            sources.add(new SourceFile("Test" + i, source));
+        }
+
+        sources.add(new SourceFile("Sanity", sanitySource));
+    }
+
+    @SuppressWarnings("unchecked")
+    static void validate(byte[] sanityClassFile) throws Throwable {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        Class<?> cls = lookup.defineClass(sanityClassFile);
+        Callable<String> obj = (Callable<String>)cls.getDeclaredConstructor().newInstance();
+        String s = obj.call();
+        if (!s.equals("this is a test")) {
+            throw new RuntimeException("Expected \"this is a test\", but got \"" + s + "\"");
         }
     }
 
     public static void main(String args[]) throws Throwable {
+        long started = System.currentTimeMillis();
         JavacBenchApp bench = new JavacBenchApp();
 
+        int count = 0;
         if (args.length > 0) {
-            int count = Integer.parseInt(args[0]);
+            count = Integer.parseInt(args[0]);
             if (count >= 0) {
                 bench.setup(count);
-        	long started = System.nanoTime();
-		for (int i = 0; i < bench.sources.size(); i++) {
-        		long startedIter = System.nanoTime();
-			SourceFile sf = bench.sources.get(i);
-                	byte[] compile = bench.compile(sf);
-        		long finishedIter = System.nanoTime();
-			System.out.println(i + " " + (finishedIter - started)/1000/1000 + " " + " " + (finishedIter - startedIter) / 1000 + " " + Arrays.hashCode(compile));
-		}
+                Map<String, byte[]> allClasses = bench.compile();
+                validate(allClasses.get("Sanity"));
             }
+        }
+        if (System.getProperty("JavacBenchApp.silent") == null) {
+            // Set this property when running with "perf stat", etc
+            long elapsed = System.currentTimeMillis() - started;
+            System.out.println("Generated source code for " + bench.sources.size() + " classes and compiled them in " + elapsed + " ms");
         }
     }
 }
