@@ -57,6 +57,7 @@ rm plot.gnu
 cat <<EOF > plot.gnu
 set terminal png size 2400, 1600
 set output "$OUT/plot-t${TI}.png"
+set palette viridis
 
 set multiplot layout 3,2
 
@@ -83,9 +84,9 @@ set title "Trained $TI Invokes; $(( $C + 1 )) CPUs available"
 set log y
 
 plot \
-     "$OUT/jdk25-$C.ssv"        using (\$1/1000000):(\$2/1000) lw 5 title 'JDK 25 (OOB)', \
-     "$OUT/jdk25-aot-$C.ssv"    using (\$1/1000000):(\$2/1000) lw 5 title 'JDK 25 (AOT)', \
-     "$OUT/jdk25-aot-norp-$C.ssv"    using (\$1/1000000):(\$2/1000) lw 5 title 'JDK 25 (AOT, no replay)'
+     "$OUT/jdk25-$C.ssv"        using (\$1/1000000):(\$2/1000) title 'JDK 25', \
+     "$OUT/jdk25-aot-$C.ssv"    using (\$1/1000000):(\$2/1000)  title 'JDK 25 (AOT)', \
+     "$OUT/jdk25-aot-norp-$C.ssv"    using (\$1/1000000):(\$2/1000) title 'JDK 25 (AOT, no replay)'
 EOF
 done
 
