@@ -3,14 +3,18 @@
 # CPU config
 sudo cpupower frequency-set -g performance
 
-J8=jdk-8
-J11=jdk-11
-J17=jdk-17
-J21=jdk-21
-J25=jdk-25
-JM=jdk-mainline
-JL=jdk-leyden
-JL=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
+P=`pwd`
+
+J8=$P/jdk-8
+J11=$P/jdk-11
+J17=$P/jdk-17
+J21=$P/jdk-21
+J25=$P/jdk-25
+JM=$P/jdk-mainline
+JL=$P/jdk-leyden
+
+JLB=/home/shade/trunks/shipilev-leyden/build/linux-x86_64-server-release/images/jdk/
+JLEA2=/home/shade/Install/leyden-premain-ea2/
 
 # Pull the binaries if not present
 if [ ! -d $J8 ]; then
